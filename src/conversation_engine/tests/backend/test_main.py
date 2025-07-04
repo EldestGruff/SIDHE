@@ -12,10 +12,13 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from fastapi.testclient import TestClient
 from fastapi import WebSocket
 
-# Test imports - these would be the actual modules
-from main import app
-from intent.models import ConversationIntent, ConversationContext
-from websocket.connection import ConnectionManager
+# Test imports - actual modules
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'backend'))
+
+from main import app, route_to_plugins, handle_status_request, handle_question, handle_command
+from intent.models import ConversationIntent, IntentType, ComplexityLevel
 from bus.publisher import MessageBus
 from memory.integration import ConversationMemory
 from plugins.registry import PluginRegistry
@@ -47,30 +50,62 @@ class TestMainApplication:
         assert "Ready to engage" in data["message"]
     
     @pytest.mark.asyncio
-    async def test_websocket_connection(self):
-        """Test WebSocket connection establishment"""
-        # This would require a more complex test setup for WebSocket testing
-        # For now, we'll test the connection manager directly
-        connection_manager = ConnectionManager()
+    async def test_route_to_plugins_mission_request(self):
+        """Test routing mission request to plugins"""
+        mock_intent = ConversationIntent(
+            type=IntentType.MISSION_REQUEST,
+            confidence=0.9,
+            entities={"system": "authentication"},
+            requires_plugins=["github_integration"],
+            context_needed=[],
+            complexity=ComplexityLevel.COMPLEX,
+            estimated_response_time=15,
+            requires_clarification=False
+        )
         
-        # Mock WebSocket
-        mock_websocket = AsyncMock(spec=WebSocket)
-        mock_websocket.accept = AsyncMock()
-        mock_websocket.send_text = AsyncMock()
+        message = {
+            "content": "Create a new authentication system",
+            "conversation_id": "test_123"
+        }
         
-        # Test connection
-        client_id = await connection_manager.connect(mock_websocket)
+        with patch('main.message_bus') as mock_bus:
+            mock_bus.request_response.return_value = {
+                "status": "success",
+                "content": "Mission created successfully"
+            }
+            
+            response = await route_to_plugins(mock_intent, message)
+            
+            assert response["status"] == "success"
+            mock_bus.request_response.assert_called_once_with(
+                "github_integration",
+                "create_mission", 
+                {"intent": mock_intent.dict(), "message": message}
+            )
+    
+    @pytest.mark.asyncio
+    async def test_route_to_plugins_status_check(self):
+        """Test routing status check to appropriate handler"""
+        mock_intent = ConversationIntent(
+            type=IntentType.STATUS_CHECK,
+            confidence=0.8,
+            entities={"target": "system"},
+            requires_plugins=[],
+            context_needed=[],
+            complexity=ComplexityLevel.SIMPLE,
+            estimated_response_time=5,
+            requires_clarification=False
+        )
         
-        # Verify connection was established
-        assert client_id in connection_manager.active_connections
-        assert connection_manager.get_connection_count() == 1
+        message = {
+            "content": "What's the system status?",
+            "conversation_id": "test_123"
+        }
         
-        # Verify welcome message was sent
-        mock_websocket.send_text.assert_called_once()
-        call_args = mock_websocket.send_text.call_args[0][0]
-        message = json.loads(call_args)
-        assert message["type"] == "connection_established"
-        assert message["client_id"] == client_id
+        response = await route_to_plugins(mock_intent, message)
+        
+        assert response["type"] == "status_response"
+        assert "System Status" in response["content"]
 
 class TestIntentParsing:
     """Test intent parsing functionality"""
