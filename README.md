@@ -42,3 +42,4 @@ riker status
 ---
 
 *"Make it so."*
+# Testing Claude Code Review permissions - Thu Jul  3 20:50:37 EDT 2025
