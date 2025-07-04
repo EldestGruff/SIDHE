@@ -1,0 +1,18 @@
+# GitHub Integration Component Dependencies
+# Install with: pip install -r requirements_github_integration.txt
+
+# Core GitHub API client
+PyGithub==2.1.1
+
+# Command-line interface
+click==8.1.7
+
+# URL/text slugification for branch names
+python-slugify==8.0.1
+
+# Testing dependencies (optional)
+pytest==7.4.3
+pytest-mock==3.12.0
+
+# Type checking support (optional)
+types-requests==2.31.0.10

@@ -1,0 +1,45 @@
+# Conversation Engine Backend Dependencies
+# FastAPI and ASGI server
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# WebSocket support
+websockets==12.0
+
+# Redis for message bus and memory integration
+redis==5.0.1
+
+# Data validation and settings
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# LLM integration
+anthropic==0.7.8
+
+# Logging and monitoring
+structlog==23.2.0
+
+# Testing framework
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-mock==3.12.0
+
+# HTTP client for health checks
+httpx==0.25.2
+
+# Type hints
+typing-extensions==4.8.0
+
+# Environment configuration
+python-dotenv==1.0.0
+
+# Date/time utilities
+python-dateutil==2.8.2
+
+# JSON handling
+orjson==3.9.10
+
+# Development tools (optional)
+black==23.11.0
+flake8==6.1.0
+mypy==1.7.1
