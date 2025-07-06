@@ -1,0 +1,17 @@
+# Workflow Generator Plugin Requirements
+
+# Core dependencies
+anthropic>=0.3.0
+redis>=4.0.0
+pyyaml>=6.0
+jsonschema>=4.0.0
+click>=8.0.0
+
+# Testing dependencies
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+pytest-mock>=3.10.0
+
+# Optional dependencies for advanced features
+jinja2>=3.0.0  # For template rendering
+croniter>=1.0.0  # For scheduled workflows
