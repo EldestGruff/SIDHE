@@ -11,10 +11,9 @@ from typing import Optional
 import sys
 import os
 
-# Add the plugins directory to path for importing Config Manager
-sys.path.append(os.path.join(os.path.dirname(__file__), "../..", "plugins"))
-
-from config_manager.plugin_interface import ConfigManager
+# Disable config manager for now to avoid import issues
+config_manager_available = False
+ConfigManager = None
 
 class Settings(BaseSettings):
     """Application settings with environment variable support"""
@@ -26,12 +25,12 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     
     # Redis configuration (for message bus and memory)
-    redis_url: str = "redis://localhost:6379"
+    redis_url: str = os.getenv("REDIS_URL", "redis://localhost:6379")
     redis_db: int = 0
     
     # LLM configuration
-    anthropic_api_key: Optional[str] = None
-    llm_model: str = "claude-3-sonnet-20240229"
+    anthropic_api_key: Optional[str] = os.getenv("ANTHROPIC_API_KEY") or os.getenv("CONVERSATION_ENGINE_ANTHROPIC_API_KEY")
+    llm_model: str = "claude-3-5-sonnet-20241022"
     llm_temperature: float = 0.1
     max_context_tokens: int = 4000
     
@@ -58,10 +57,16 @@ class Settings(BaseSettings):
 settings = Settings()
 
 # Integration with existing Config Manager
-config_manager = ConfigManager()
+if config_manager_available:
+    config_manager = ConfigManager()
+else:
+    config_manager = None
 
 def load_from_config_manager():
     """Load additional configuration from Config Manager plugin"""
+    if not config_manager_available:
+        return
+        
     try:
         # Load conversation engine specific config if it exists
         config = config_manager.load_config("conversation_engine")

@@ -26,7 +26,7 @@ function App() {
     sendMessage, 
     lastMessage,
     connectionError 
-  } = useWebSocket('ws://localhost:8000/ws');
+  } = useWebSocket(`ws://${window.location.host}/ws`);
   
   // Conversation state management
   const {
@@ -45,7 +45,7 @@ function App() {
         
         if (messageData.type === 'connection_established') {
           console.log('Connection established with backend');
-        } else if (messageData.type === 'response') {
+        } else if (messageData.type === 'response' || messageData.type.endsWith('_response') || messageData.type === 'answer') {
           // Add assistant response to conversation
           addMessage(currentConversation, {
             id: Date.now(),

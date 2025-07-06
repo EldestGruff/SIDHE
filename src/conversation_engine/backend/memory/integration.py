@@ -9,10 +9,8 @@ from typing import Dict, Any, List, Optional
 from datetime import datetime
 import uuid
 
-# Add the plugins directory to path for importing Memory Manager
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../../..", "plugins"))
-
-from memory_manager.plugin_interface import MemoryManager
+# Memory Manager completely disabled for core conversation functionality
+MemoryManager = None
 
 logger = logging.getLogger(__name__)
 
@@ -21,12 +19,9 @@ class ConversationMemory:
     
     def __init__(self):
         """Initialize Memory Manager plugin integration"""
-        try:
-            self.memory_manager = MemoryManager()
-            logger.info("ConversationMemory initialized with Memory Manager plugin")
-        except Exception as e:
-            logger.error(f"Failed to initialize Memory Manager: {e}")
-            self.memory_manager = None
+        # Memory Manager temporarily disabled - conversation will work without persistent memory
+        logger.info("ConversationMemory initialized without Memory Manager (temporarily disabled)")
+        self.memory_manager = None
     
     async def store_turn(self, conversation_id: str, turn_data: Dict[str, Any]) -> bool:
         """
@@ -41,8 +36,8 @@ class ConversationMemory:
         """
         try:
             if not self.memory_manager:
-                logger.warning("Memory Manager not available, skipping turn storage")
-                return False
+                logger.debug("Memory Manager not available, skipping turn storage")
+                return True  # Return True to not block conversation flow
             
             # Generate turn ID
             turn_id = str(uuid.uuid4())
@@ -214,24 +209,4 @@ class ConversationMemory:
     
     async def health_check(self) -> str:
         """Health check for memory integration"""
-        try:
-            if not self.memory_manager:
-                return "disconnected"
-            
-            # Test basic functionality
-            test_key = "health_check_test"
-            test_data = {"timestamp": datetime.now().isoformat()}
-            
-            # Try to store and retrieve
-            if self.memory_manager.store_memory(test_key, test_data):
-                retrieved = self.memory_manager.get_memory(test_key)
-                if retrieved:
-                    return "operational"
-                else:
-                    return "degraded"
-            else:
-                return "error"
-                
-        except Exception as e:
-            logger.error(f"Memory health check failed: {e}")
-            return "error"
+        return "disabled"

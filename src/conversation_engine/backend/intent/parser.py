@@ -8,7 +8,7 @@ import logging
 from typing import Optional, Dict, Any
 import anthropic
 from .models import ConversationIntent, ConversationContext, IntentType, ComplexityLevel
-from ..config.settings import settings
+from config.settings import settings
 
 logger = logging.getLogger(__name__)
 

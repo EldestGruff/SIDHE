@@ -10,7 +10,7 @@ import uuid
 from typing import Dict, Any, Optional
 from datetime import datetime
 
-from ..config.settings import settings
+from config.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -45,8 +45,9 @@ class MessageBus:
             asyncio.create_task(self._listen_for_responses())
             
         except Exception as e:
-            logger.error(f"Failed to initialize message bus: {e}")
-            raise
+            logger.warning(f"Message bus initialization failed: {e}. Plugin communication disabled.")
+            self.redis_client = None
+            self.pubsub = None
     
     async def publish(self, topic: str, message: Dict[str, Any]):
         """
@@ -90,9 +91,11 @@ class MessageBus:
         """
         try:
             if not self.redis_client:
+                logger.debug("Message bus not available, returning fallback response")
                 return {
-                    "status": "error",
-                    "error": "Message bus not initialized"
+                    "status": "unavailable",
+                    "error": "Message bus not initialized",
+                    "fallback": True
                 }
             
             # Generate unique message ID

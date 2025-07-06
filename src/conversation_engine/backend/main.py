@@ -20,15 +20,18 @@ import uvicorn
 
 from intent.models import ConversationIntent
 
-from config.settings import Settings
+from config.settings import settings
+
+# Initialize logger
+logger = logging.getLogger(__name__)
 from websocket.connection import ConnectionManager
 from intent.parser import IntentParser
 from bus.publisher import MessageBus
 from memory.integration import ConversationMemory
-from plugins.registry import PluginRegistry
+# Disable plugin registry for now to eliminate errors
+PluginRegistry = None
 
-# Initialize settings
-settings = Settings()
+# Settings imported from config module
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -46,18 +49,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize core components
+# Initialize lightweight components
 connection_manager = ConnectionManager()
-intent_parser = IntentParser()
-message_bus = MessageBus()
-conversation_memory = ConversationMemory()
-plugin_registry = PluginRegistry()
+
+# Initialize heavy components during startup
+intent_parser = None
+message_bus = None
+conversation_memory = None
+plugin_registry = None
 
 @app.on_event("startup")
 async def startup_event():
     """Initialize application components on startup"""
-    await message_bus.initialize()
-    await plugin_registry.discover_plugins()
+    global intent_parser, message_bus, conversation_memory, plugin_registry
+    
+    # Initialize components during startup
+    intent_parser = IntentParser()
+    message_bus = MessageBus()
+    # Temporarily disable memory to fix core conversation functionality
+    # conversation_memory = ConversationMemory()
+    plugin_registry = PluginRegistry() if PluginRegistry else None
+    
+    # Temporarily disable message bus Redis initialization
+    # await message_bus.initialize()
+    if plugin_registry:
+        await plugin_registry.discover_plugins()
     logging.info("Conversation Engine startup complete")
 
 @app.get("/")
@@ -73,41 +89,125 @@ async def health_check():
         "components": {
             "websocket": "ready",
             "message_bus": await message_bus.health_check(),
-            "plugins": await plugin_registry.get_status(),
-            "memory": await conversation_memory.health_check()
+            "plugins": await plugin_registry.get_status() if plugin_registry else "not_available",
+            "memory": await conversation_memory.health_check() if conversation_memory else "disabled"
         }
     }
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
+    """WebSocket endpoint with direct conversation processing"""
+    await websocket.accept()
+    logger.info("🔥 WebSocket handler - connection accepted")
+    
+    # Send connection established message
+    await websocket.send_text(json.dumps({
+        "type": "connection_established",
+        "message": "Connected to Riker - Ready for conversation!"
+    }))
+    
+    try:
+        while True:
+            data = await websocket.receive_text()
+            logger.info(f"🔥 HANDLER - Received: {data}")
+            
+            try:
+                message = json.loads(data)
+                user_input = message.get("content", "")
+                conversation_id = message.get("conversation_id", "default")
+                
+                # Process with intent parser and generate AI response
+                if intent_parser:
+                    logger.info(f"🧠 Processing message: {user_input}")
+                    intent = await intent_parser.parse_intent(user_input, conversation_id)
+                    logger.info(f"✅ Intent parsed: {intent.type}")
+                    
+                    # Generate response based on intent
+                    response = await route_to_plugins(intent, message)
+                    logger.info(f"📤 Sending response: {response}")
+                    
+                    await websocket.send_text(json.dumps(response))
+                else:
+                    # Fallback response if intent parser not available
+                    await websocket.send_text(json.dumps({
+                        "type": "response",
+                        "content": f"I received your message: '{user_input}' - but my intent parser is not available right now."
+                    }))
+                    
+            except json.JSONDecodeError:
+                await websocket.send_text(json.dumps({
+                    "type": "response",
+                    "content": "I received your message but couldn't parse it properly. Please try again."
+                }))
+            except Exception as e:
+                logger.error(f"❌ Error processing message: {e}")
+                await websocket.send_text(json.dumps({
+                    "type": "response",
+                    "content": f"I encountered an error processing your message: {str(e)}"
+                }))
+            
+    except WebSocketDisconnect:
+        logger.info("🔥 WebSocket disconnected")
+
+@app.websocket("/ws_old")
+async def websocket_endpoint_old(websocket: WebSocket):
     """Main WebSocket endpoint for real-time communication"""
-    await connection_manager.connect(websocket)
+    await websocket.accept()
+    logger.info("WebSocket connection accepted")
+    
     try:
         while True:
             # Receive message from frontend
             data = await websocket.receive_text()
-            message = json.loads(data)
+            logger.info(f"🎯 Received WebSocket message: {data}")
             
-            # Parse intent and route to appropriate handler
-            intent = await intent_parser.parse_intent(
-                message["content"], 
-                message.get("conversation_id")
-            )
-            
-            # Store conversation turn
-            await conversation_memory.store_turn(
-                message.get("conversation_id"),
-                {"user_input": message["content"], "intent": intent.dict()}
-            )
-            
-            # Route to plugins via message bus
-            response = await route_to_plugins(intent, message)
-            
-            # Send response back to frontend
-            await websocket.send_text(json.dumps(response))
+            try:
+                message = json.loads(data)
+                logger.info(f"📝 Parsed message: {message}")
+                
+                # Simple response for testing
+                if not intent_parser:
+                    logger.error("Intent parser not initialized")
+                    response = {
+                        "type": "error",
+                        "content": "Intent parser not available"
+                    }
+                else:
+                    # Parse intent and route to appropriate handler
+                    logger.info("🧠 Parsing intent...")
+                    intent = await intent_parser.parse_intent(
+                        message["content"], 
+                        message.get("conversation_id")
+                    )
+                    logger.info(f"✅ Intent parsed: {intent.type}")
+                    
+                    # Route to plugins via message bus
+                    logger.info("🔄 Routing to plugins...")
+                    response = await route_to_plugins(intent, message)
+                    logger.info(f"📤 Generated response: {response}")
+                
+                # Send response back to frontend
+                await websocket.send_text(json.dumps(response))
+                logger.info("✅ Response sent to frontend")
+                
+            except Exception as e:
+                logger.error(f"❌ Error processing WebSocket message: {e}")
+                import traceback
+                traceback.print_exc()
+                
+                error_response = {
+                    "type": "error",
+                    "content": f"I encountered an error processing your message: {str(e)}",
+                    "error": str(e)
+                }
+                await websocket.send_text(json.dumps(error_response))
             
     except WebSocketDisconnect:
-        connection_manager.disconnect(websocket)
+        logger.info("🔌 WebSocket disconnected")
+    except Exception as e:
+        logger.error(f"❌ WebSocket error: {e}")
+        import traceback
+        traceback.print_exc()
 
 async def route_to_plugins(intent, message: Dict[str, Any]) -> Dict[str, Any]:
     """Route intent to appropriate plugins and return response"""
@@ -301,8 +401,8 @@ async def get_system_health() -> Dict[str, Any]:
             "components": {
                 "websocket": "ready",
                 "message_bus": await message_bus.health_check(),
-                "plugins": await plugin_registry.get_status(),
-                "memory": await conversation_memory.health_check()
+                "plugins": await plugin_registry.get_status() if plugin_registry else "not_available",
+                "memory": await conversation_memory.health_check() if conversation_memory else "disabled"
             }
         }
     except Exception as e:

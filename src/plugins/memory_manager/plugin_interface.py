@@ -12,6 +12,9 @@ class MemoryManager:
     
     def __init__(self, redis_url: str = "redis://localhost:6379"):
         """Initialize connection to Redis"""
+        import traceback
+        logger.info(f"MemoryManager.__init__ called with redis_url={redis_url}")
+        logger.info(f"Call stack: {traceback.format_stack()[-3:-1]}")
         try:
             self.redis_client = redis.from_url(redis_url, decode_responses=True)
             # Test connection
