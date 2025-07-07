@@ -21,7 +21,7 @@ class ConversationMemory:
         """Initialize Memory Manager plugin integration"""
         # Memory Manager temporarily disabled - conversation will work without persistent memory
         logger.info("ConversationMemory initialized without Memory Manager (temporarily disabled)")
-        self.memory_manager = None
+        self.tome_keeper = None
     
     async def store_turn(self, conversation_id: str, turn_data: Dict[str, Any]) -> bool:
         """
@@ -35,7 +35,7 @@ class ConversationMemory:
             bool: True if stored successfully
         """
         try:
-            if not self.memory_manager:
+            if not self.tome_keeper:
                 logger.debug("Memory Manager not available, skipping turn storage")
                 return True  # Return True to not block conversation flow
             
@@ -60,7 +60,7 @@ class ConversationMemory:
             
             # Store in Memory Manager with conversation-specific key
             memory_key = f"conversation:{conversation_id}:turn:{turn_id}"
-            success = self.memory_manager.store_memory(memory_key, memory_data)
+            success = self.tome_keeper.store_memory(memory_key, memory_data)
             
             if success:
                 logger.info(f"Stored conversation turn {turn_id} for conversation {conversation_id}")
@@ -86,13 +86,13 @@ class ConversationMemory:
             List of conversation turns
         """
         try:
-            if not self.memory_manager:
+            if not self.tome_keeper:
                 logger.warning("Memory Manager not available")
                 return []
             
             # Get conversation metadata to find turn keys
             metadata_key = f"conversation:{conversation_id}:metadata"
-            metadata = self.memory_manager.get_memory(metadata_key)
+            metadata = self.tome_keeper.get_memory(metadata_key)
             
             if not metadata:
                 logger.info(f"No conversation history found for {conversation_id}")
@@ -104,7 +104,7 @@ class ConversationMemory:
             
             for turn_id in turn_ids:
                 turn_key = f"conversation:{conversation_id}:turn:{turn_id}"
-                turn_data = self.memory_manager.get_memory(turn_key)
+                turn_data = self.tome_keeper.get_memory(turn_key)
                 if turn_data:
                     turns.append(turn_data)
             
@@ -151,7 +151,7 @@ class ConversationMemory:
             metadata_key = f"conversation:{conversation_id}:metadata"
             
             # Get existing metadata or create new
-            metadata = self.memory_manager.get_memory(metadata_key) or {
+            metadata = self.tome_keeper.get_memory(metadata_key) or {
                 "conversation_id": conversation_id,
                 "created_at": datetime.now().isoformat(),
                 "turn_ids": [],
@@ -168,7 +168,7 @@ class ConversationMemory:
             metadata["last_intent"] = turn_data.get("intent", {}).get("type")
             
             # Store updated metadata
-            return self.memory_manager.store_memory(metadata_key, metadata)
+            return self.tome_keeper.store_memory(metadata_key, metadata)
             
         except Exception as e:
             logger.error(f"Error updating conversation metadata: {e}")

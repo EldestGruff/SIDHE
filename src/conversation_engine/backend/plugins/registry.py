@@ -25,19 +25,19 @@ class PluginRegistry:
         try:
             # Known plugins in the system
             known_plugins = {
-                "memory_manager": {
+                "tome_keeper": {
                     "name": "Memory Manager",
                     "description": "Conversation memory and context management",
-                    "module": "memory_manager.plugin_interface",
+                    "module": "tome_keeper.plugin_interface",
                     "class": "MemoryManager",
                     "capabilities": ["store_memory", "get_memory", "clear_memory"]
                 },
-                "github_integration": {
+                "quest_tracker": {
                     "name": "GitHub Integration", 
-                    "description": "Away Mission management and GitHub operations",
-                    "module": "github_integration.plugin_interface",
-                    "class": "GitHubManager", 
-                    "capabilities": ["get_away_missions", "create_mission", "update_mission_progress"]
+                    "description": "Quest management and GitHub operations",
+                    "module": "quest_tracker.plugin_interface",
+                    "class": "QuestTracker", 
+                    "capabilities": ["get_away_quests", "create_quest", "update_quest_progress"]
                 },
                 "config_manager": {
                     "name": "Config Manager",
@@ -107,7 +107,7 @@ class PluginRegistry:
             # Add health status if available
             if plugin_id in self.plugin_health:
                 health = self.plugin_health[plugin_id]
-                if health != "operational":
+                if health != "enchanted":
                     plugin_status = f"{plugin_status}:{health}"
             
             status[plugin_id] = plugin_status
@@ -169,10 +169,10 @@ class PluginRegistry:
                     if hasattr(health_result, '__await__'):
                         health_result = await health_result
                     
-                    self.plugin_health[plugin_id] = health_result or "operational"
+                    self.plugin_health[plugin_id] = health_result or "enchanted"
                 else:
-                    # If no health check method, assume operational if instance exists
-                    self.plugin_health[plugin_id] = "operational"
+                    # If no health check method, assume enchanted if instance exists
+                    self.plugin_health[plugin_id] = "enchanted"
                     
             except Exception as e:
                 logger.warning(f"Health check failed for {plugin_id}: {e}")

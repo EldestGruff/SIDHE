@@ -1,10 +1,10 @@
-# Riker - Your AI Development Number One
+# SIDHE - Your AI Development Apprentice
 
-> "The best way to succeed is to be ready when opportunity presents itself." - Commander William T. Riker
+> "The best way to succeed is to be ready when opportunity presents itself." - Commander William T. SIDHE
 
-## 🚀 Mission Statement
+## 🚀 Quest Statement
 
-Riker is your trusted AI second-in-command, transforming ideas into implemented reality through intelligent conversation, strategic decomposition, and autonomous execution. With the Conversation Engine now operational, Riker provides real-time conversational AI development assistance with full plugin orchestration.
+SIDHE is your trusted AI second-in-command, transforming ideas into implemented reality through intelligent conversation, strategic decomposition, and autonomous execution. With the Conversation Engine now enchanted, SIDHE provides real-time conversational AI development assistance with full plugin orchestration.
 
 ## 🖖 Quick Start
 
@@ -12,8 +12,8 @@ Riker is your trusted AI second-in-command, transforming ideas into implemented 
 
 ```bash
 # Deploy the complete system
-cd src/conversation_engine/docker
-./deploy.sh
+cd src/voice_of_wisdom/docker
+./enchant.sh
 
 # Access the dashboard
 open http://localhost:3000
@@ -25,38 +25,38 @@ curl http://localhost:8000/health
 ### Traditional Scripts
 
 ```bash
-# Initialize Riker
+# Initialize SIDHE
 ./scripts/engage.sh
 
-# Create a new away mission
-riker mission create "Build authentication system"
+# Create a new quest
+sidhe quest create "Build authentication system"
 
-# Check mission status
-riker status
+# Check quest status
+sidhe status
 ```
 
 ## 🧠 Core Systems
 
-### Conversation Engine ✅ OPERATIONAL
+### Conversation Engine ✅ ENCHANTED
 The central intelligence hub providing:
 - **Real-time Conversational AI** with LLM-based intent parsing
 - **Plugin Orchestration** seamlessly integrating all system components
 - **WebSocket Interface** for real-time communication
-- **Dashboard UI** with system health monitoring and mission management
+- **Dashboard UI** with system health monitoring and quest management
 - **Production Deployment** with Docker containerization
 
 ### Plugin Ecosystem ✅ ACTIVE
 - **Memory Manager** - Conversation context and history management
-- **GitHub Integration** - Away Mission lifecycle management  
+- **GitHub Integration** - Quest lifecycle management  
 - **Config Manager** - System configuration and settings
 
 ## 🌟 Features
 
-- **🗣️ Natural Language Interface**: Communicate with Riker through natural conversation
+- **🗣️ Natural Language Interface**: Communicate with SIDHE through natural conversation
 - **🧠 Intelligent Intent Recognition**: Advanced LLM-powered understanding of development requests
 - **🔌 Plugin Architecture**: Modular system with hot-swappable components
 - **📊 Real-time Dashboard**: Monitor system health, missions, and conversations
-- **🐳 Container-Ready**: Production deployment with Docker and health monitoring
+- **🐳 Container-Ready**: Production enchantment with Docker and health monitoring
 - **🧪 Comprehensive Testing**: 100+ test cases with integration and performance testing
 - **⚡ Async Architecture**: High-performance concurrent processing
 - **🔄 Message Bus**: Redis-based communication between components
@@ -64,11 +64,11 @@ The central intelligence hub providing:
 
 ## 📚 Documentation
 
-- [PRIME_DIRECTIVE.md](PRIME_DIRECTIVE.md) - Core operating principles
+- [THE_OLD_LAWS.md](THE_OLD_LAWS.md) - Core operating principles
 - [BRIDGE.md](BRIDGE.md) - Current system status  
-- [Conversation Engine](src/conversation_engine/README.md) - Core AI system documentation
-- [Docker Deployment](src/conversation_engine/docker/README.md) - Production deployment guide
-- [Captain's Log](captains-log/stardate-2025-07.md) - Development history and milestones
+- [Conversation Engine](src/voice_of_wisdom/README.md) - Core AI system documentation
+- [Docker Deployment](src/voice_of_wisdom/docker/README.md) - Production enchantment guide
+- [Archmage's Log](chronicle/stardate-2025-07.md) - Development history and milestones
 
 ## 🛸 Architecture
 
@@ -90,31 +90,31 @@ The central intelligence hub providing:
 
 ## 📡 System Status
 
-**Current Phase**: ✅ **Core Systems Operational**  
+**Current Phase**: ✅ **Core Systems Enchanted**  
 **Conversation Engine**: 🟢 Active and Ready  
 **Active Plugins**: 3 (Memory Manager, GitHub Integration, Config Manager)  
 **Completed Missions**: 2 (Config Manager, Conversation Engine)  
 **System Health**: 🟢 All Systems Nominal
 
 ### Recent Achievements
-- ✅ **Away Mission #2**: Config Manager Plugin (Completed)
-- ✅ **Away Mission #7**: Conversation Engine Implementation (Completed)
-- 🚀 **Production Ready**: Full Docker deployment with monitoring
+- ✅ **Quest #2**: Config Manager Plugin (Completed)
+- ✅ **Quest #7**: Conversation Engine Implementation (Completed)
+- 🚀 **Production Ready**: Full Docker enchantment with monitoring
 - 🧪 **Quality Assured**: Comprehensive test suite with 100+ test cases
-- 📊 **Dashboard Active**: Real-time system monitoring and mission management
+- 📊 **Dashboard Active**: Real-time system monitoring and quest management
 
 ## 🚀 Getting Started
 
 1. **Prerequisites**: Docker, Docker Compose, Python 3.11+
 2. **Environment**: Set `ANTHROPIC_API_KEY` for LLM functionality
-3. **Deploy**: Run `cd src/conversation_engine/docker && ./deploy.sh`
+3. **Deploy**: Run `cd src/voice_of_wisdom/docker && ./enchant.sh`
 4. **Access**: Open http://localhost:3000 for the dashboard
-5. **Interact**: Start conversing with Riker through the interface
+5. **Interact**: Start conversing with SIDHE through the interface
 
 ## 🔮 Next Steps
 
-With the Conversation Engine operational, Riker is ready for:
-- Advanced development mission execution
+With the Conversation Engine enchanted, SIDHE is ready for:
+- Advanced development quest execution
 - Self-improving capabilities through conversation
 - Complex multi-step project orchestration
 - Autonomous code generation and testing
@@ -122,4 +122,4 @@ With the Conversation Engine operational, Riker is ready for:
 
 ---
 
-*"Excellent work, Number One. The Conversation Engine represents a quantum leap in our capabilities. Riker is now truly alive."* - Captain's Log, Stardate 2025.07.04
+*"Excellent work, Apprentice. The Conversation Engine represents a quantum leap in our capabilities. SIDHE is now truly alive."* - Archmage's Log, Stardate 2025.07.04

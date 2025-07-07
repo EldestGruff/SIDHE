@@ -2,17 +2,17 @@
 
 **Foundation Status**: COMPLETE  
 **Implementation Ready**: YES  
-**Created By**: Chief Engineer Ivy + Captain Andy  
+**Created By**: Chief Engineer Ivy + Archmage Andy  
 **Date**: July 3, 2025
 
-## 🎯 Mission Overview
+## 🎯 Quest Overview
 
 The Conversation Engine foundation has been systematically built and is ready for Claude Code implementation. This document provides comprehensive guidance on the architecture, implementation patterns, and integration points that have been established.
 
 ## 📐 Architecture Decisions Made
 
 ### 1. **Project Structure Decision**
-- **Location**: `src/conversation_engine/` (NOT in plugins)
+- **Location**: `src/voice_of_wisdom/` (NOT in plugins)
 - **Rationale**: This is the central orchestrator, not a plugin
 - **Impact**: Communicates to Claude Code that this is the main application
 
@@ -31,7 +31,7 @@ The Conversation Engine foundation has been systematically built and is ready fo
 
 ## 🏗️ Foundation Components Built
 
-### Backend Foundation (`src/conversation_engine/backend/`)
+### Backend Foundation (`src/voice_of_wisdom/backend/`)
 
 #### 1. **Main Application** (`main.py`)
 - FastAPI app with WebSocket endpoint at `/ws`
@@ -88,7 +88,7 @@ config_manager = ConfigManager()
 #### 6. **Memory Integration** (`memory/integration.py`)
 - Integration layer for existing Memory Manager plugin
 - Conversation history and context management
-- Mission association tracking
+- Quest association tracking
 - Hierarchical context building (session → project → global)
 
 #### 7. **Plugin Registry** (`plugins/registry.py`)
@@ -99,10 +99,10 @@ config_manager = ConfigManager()
 
 **Pre-registered Plugins**:
 - Memory Manager: conversation history, context management
-- GitHub Integration: mission management, PR creation
+- GitHub Integration: quest management, PR creation
 - Config Manager: configuration and settings
 
-### Frontend Foundation (`src/conversation_engine/frontend/`)
+### Frontend Foundation (`src/voice_of_wisdom/frontend/`)
 
 #### 1. **Main Application** (`App.jsx`)
 - React app with WebSocket connection management
@@ -136,7 +136,7 @@ config_manager = ConfigManager()
 ### 1. **Memory Manager Integration**
 - **Path**: `memory/integration.py`
 - **Pattern**: Direct import and method calls
-- **Usage**: Conversation history, context building, mission associations
+- **Usage**: Conversation history, context building, quest associations
 
 ### 2. **Plugin Communication**
 - **Path**: `bus/publisher.py` + `plugins/registry.py`
@@ -159,7 +159,7 @@ class IntentParser:
     async def parse_intent(self, user_input: str, context: ConversationContext) -> ConversationIntent:
         # Use LLM (Anthropic API) to parse user input
         # Return structured ConversationIntent with:
-        # - type (question, mission_request, status_check, etc.)
+        # - type (question, quest_request, status_check, etc.)
         # - confidence score
         # - required plugins
         # - extracted entities
@@ -181,9 +181,9 @@ class IntentParser:
 **Pattern**:
 ```python
 async def route_to_plugins(intent: ConversationIntent, message: Dict) -> Dict:
-    if intent.type == "mission_request":
+    if intent.type == "quest_request":
         return await message_bus.request_response(
-            "github_integration", "create_mission", intent.payload
+            "quest_tracker", "create_quest", intent.payload
         )
     # Add routing for other intent types
 ```
@@ -234,7 +234,7 @@ CONVERSATION_ENGINE_LOG_LEVEL=INFO
 
 ### Phase 2: User Interface (Priority 2)
 - [ ] Create Dashboard components
-- [ ] Implement mission display and management
+- [ ] Implement quest display and management
 - [ ] Add system health monitoring UI
 - [ ] Complete responsive design and accessibility
 
@@ -276,11 +276,11 @@ CONVERSATION_ENGINE_LOG_LEVEL=INFO
 
 The implementation will be considered successful when:
 
-1. **Real-time Conversation**: Users can chat with Riker via WebSocket
+1. **Real-time Conversation**: Users can chat with SIDHE via WebSocket
 2. **Intent Recognition**: System correctly classifies user requests
 3. **Plugin Orchestration**: Messages route to appropriate plugins
 4. **Memory Integration**: Conversation history persists and context builds
-5. **Mission Creation**: Complex requests generate GitHub issues
+5. **Quest Creation**: Complex requests generate GitHub issues
 6. **Status Monitoring**: Dashboard shows system and plugin health
 7. **Error Recovery**: Graceful handling of failures and reconnection
 
@@ -300,4 +300,4 @@ The foundation is designed to integrate seamlessly with:
 
 **Estimated Implementation Time**: 2-3 weeks for full feature completion by Claude Code.
 
-*"The neural pathways are established, Captain. Ready to bring Riker's brain online!"* - Chief Engineer Ivy
+*"The neural pathways are established, Archmage. Ready to bring SIDHE's brain awakened!"* - Chief Engineer Ivy

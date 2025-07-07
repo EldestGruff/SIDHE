@@ -70,11 +70,11 @@ class IntentParser:
     
     def _build_intent_prompt(self, user_input: str) -> str:
         """Build the prompt for intent classification"""
-        return f"""You are Riker's intent classification system. Parse the user input and return a JSON response with the intent classification.
+        return f"""You are SIDHE's intent classification system. Parse the user input and return a JSON response with the intent classification.
 
 Available intent types:
 - question: General questions about the project, system, or how things work
-- mission_request: Requests to create new features, fix bugs, or implement something
+- quest_request: Requests to create new features, fix bugs, or implement something
 - status_check: Asking about current status of missions, system health, or progress
 - command: Direct commands to perform specific actions
 - discussion: Open-ended discussion about architecture, decisions, or planning
@@ -86,8 +86,8 @@ Available complexity levels:
 - multi_step: Complex workflow spanning multiple components
 
 Available plugins that might be needed:
-- github_integration: For creating missions, managing PRs, checking issues
-- memory_manager: For remembering conversations and context
+- quest_tracker: For creating missions, managing PRs, checking issues
+- tome_keeper: For remembering conversations and context
 - config_manager: For configuration and settings management
 
 User input: "{user_input}"
@@ -105,13 +105,13 @@ Respond with a JSON object matching this exact schema:
 }}
 
 Be specific about plugin requirements:
-- If asking about missions/issues/PRs → require github_integration
-- If asking about past conversations → require memory_manager  
+- If asking about missions/issues/PRs → require quest_tracker
+- If asking about past conversations → require tome_keeper  
 - If asking about configuration → require config_manager
 - If asking about multiple things → require multiple plugins
 
 Analyze the complexity carefully:
-- Simple: "What's the status of mission 3?" 
+- Simple: "What's the status of quest 3?" 
 - Complex: "Help me plan an authentication system"
 - Multi-step: "Build a complete REST API with auth, database, and testing"
 
@@ -126,10 +126,10 @@ Return only the JSON object, no other text."""
         
         if any(word in lower_input for word in ["status", "how is", "what's the", "show me"]):
             intent_type = IntentType.STATUS_CHECK
-            plugins = ["github_integration"] if "mission" in lower_input else []
+            plugins = ["quest_tracker"] if "quest" in lower_input else []
         elif any(word in lower_input for word in ["create", "build", "implement", "add", "make"]):
             intent_type = IntentType.MISSION_REQUEST
-            plugins = ["github_integration"]
+            plugins = ["quest_tracker"]
         elif any(word in lower_input for word in ["?", "how", "what", "why", "when"]):
             intent_type = IntentType.QUESTION
             plugins = []

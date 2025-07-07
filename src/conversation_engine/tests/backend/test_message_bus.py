@@ -69,7 +69,7 @@ class TestMessageBus:
         assert published_message["content"] == "Hello World"
         assert published_message["data"] == {"key": "value"}
         assert "timestamp" in published_message
-        assert published_message["source"] == "conversation_engine"
+        assert published_message["source"] == "voice_of_wisdom"
     
     @pytest.mark.asyncio
     async def test_publish_without_redis(self, message_bus):
@@ -209,12 +209,12 @@ class TestMessageBus:
         message_bus.redis_client = mock_redis_client
         
         event_data = {
-            "mission_id": "123",
+            "quest_id": "123",
             "status": "created",
             "assignee": "Claude"
         }
         
-        await message_bus.publish_event("mission_created", event_data)
+        await message_bus.publish_event("quest_created", event_data)
         
         # Verify publish was called
         mock_redis_client.publish.assert_called_once()
@@ -224,19 +224,19 @@ class TestMessageBus:
         
         # Parse the published event
         published_event = json.loads(call_args[0][1])
-        assert published_event["event_type"] == "mission_created"
+        assert published_event["event_type"] == "quest_created"
         assert published_event["data"] == event_data
         assert "timestamp" in published_event
-        assert published_event["source"] == "conversation_engine"
+        assert published_event["source"] == "voice_of_wisdom"
     
     @pytest.mark.asyncio
     async def test_health_check_operational(self, message_bus, mock_redis_client):
-        """Test health check when operational"""
+        """Test health check when enchanted"""
         message_bus.redis_client = mock_redis_client
         
         health_status = await message_bus.health_check()
         
-        assert health_status == "operational"
+        assert health_status == "enchanted"
         mock_redis_client.ping.assert_called_once()
         mock_redis_client.publish.assert_called_once()  # Health test publish
     
@@ -297,7 +297,7 @@ class TestMessageBus:
         assert published_message["type"] == "test"
         assert published_message["content"] == "test"
         assert "timestamp" in published_message
-        assert published_message["source"] == "conversation_engine"
+        assert published_message["source"] == "voice_of_wisdom"
         
         # Verify timestamp is valid ISO format
         from datetime import datetime

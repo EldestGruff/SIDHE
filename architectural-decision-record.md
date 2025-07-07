@@ -1,6 +1,6 @@
-# Riker - Architectural Decision Record (ADR)
+# SIDHE - Architectural Decision Record (ADR)
 
-**Document Purpose:** Centralized record of all architectural decisions made during Riker development  
+**Document Purpose:** Centralized record of all architectural decisions made during SIDHE development  
 **Created:** July 5, 2025  
 **Last Updated:** July 5, 2025  
 **Status:** Active - Foundation Complete  
@@ -20,47 +20,47 @@
 - [ADR-010](#adr-010): Development Environment Setup
 
 ### Development & Process Decisions
-- [ADR-011](#adr-011): Development Workflow and Away Mission Process
+- [ADR-011](#adr-011): Development Workflow and Quest Process
 - [ADR-012](#adr-012): GitHub-Centric Project Management Strategy
 - [ADR-013](#adr-013): Semi-Automated Development Approach
-- [ADR-014](#adr-014): Star Trek Theming and Terminology Strategy
+- [ADR-014](#adr-014): Fairy Tale Theming and Terminology Strategy
 
 ---
 
-## ADR-011: Development Workflow and Away Mission Process
+## ADR-011: Development Workflow and Quest Process
 
 **Date:** July 3, 2025  
 **Status:** ✅ APPROVED & PROVEN  
-**Participants:** Captain Andy, Chief Engineer Ivy  
+**Participants:** Archmage Andy, Chief Engineer Ivy  
 
 ### Context
 Need a standardized development workflow that supports AI-driven autonomous implementation while maintaining quality and oversight.
 
 ### Decision
 
-#### Away Mission Workflow
-1. **Mission Creation**: GitHub Issues using standardized template
-2. **Specification**: Reference document in `crew-quarters/` directory
+#### Quest Workflow
+1. **Quest Creation**: GitHub Issues using standardized template
+2. **Specification**: Reference document in `grimoire/` directory
 3. **Implementation**: Claude Code reads issue and specification autonomously
-4. **Branch Management**: `away-mission-{number}-{slugified-title}` naming convention
+4. **Branch Management**: `quest-{number}-{slugified-title}` naming convention
 5. **Pull Request**: Automatic creation by Claude Code with issue linkage
 6. **Review & Merge**: Human oversight for quality assurance
 
 #### Proven Workflow Steps
 ```bash
-# 1. Mission Analysis
-./scripts/implement-mission.sh {issue_number}
+# 1. Quest Analysis
+./scripts/implement-quest.sh {issue_number}
 
 # 2. Claude Code Implementation (autonomous)
-"Read Away Mission #{number} and implement according to specification"
+"Read Quest #{number} and implement according to specification"
 
 # 3. Automatic PR Creation
 # 4. Human Review and Merge
 ```
 
-#### Mission Template Structure
-- **Mission Brief**: Clear objectives and scope
-- **Technical Specifications**: Reference to crew-quarters documentation
+#### Quest Template Structure
+- **Quest Brief**: Clear objectives and scope
+- **Technical Specifications**: Reference to grimoire documentation
 - **Acceptance Criteria**: Measurable success conditions
 - **Classification**: Priority levels with emoji indicators
 
@@ -82,9 +82,9 @@ Need a standardized development workflow that supports AI-driven autonomous impl
 
 ### Implementation Status
 **PROVEN SUCCESSFUL**:
-- Memory Manager Plugin: ✅ Complete (Away Mission #1)
-- GitHub Integration Plugin: ✅ Complete (Away Mission #2)  
-- Config Manager Plugin: ✅ Complete (Away Mission #3, PR #4 merged, 34/34 tests passing)
+- Memory Manager Plugin: ✅ Complete (Quest #1)
+- GitHub Integration Plugin: ✅ Complete (Quest #2)  
+- Config Manager Plugin: ✅ Complete (Quest #3, PR #4 merged, 34/34 tests passing)
 
 ---
 
@@ -92,7 +92,7 @@ Need a standardized development workflow that supports AI-driven autonomous impl
 
 **Date:** July 3, 2025  
 **Status:** ✅ APPROVED & PROVEN  
-**Participants:** Captain Andy, Chief Engineer Ivy  
+**Participants:** Archmage Andy, Chief Engineer Ivy  
 
 ### Context
 Project requires transparent, trackable development with AI-friendly structured information management.
@@ -100,21 +100,21 @@ Project requires transparent, trackable development with AI-friendly structured 
 ### Decision
 
 #### GitHub as Central Hub
-- **Issues**: All work items tracked as GitHub Issues with "away-mission" label
-- **Documentation**: Specifications stored in repository (`crew-quarters/`)
+- **Issues**: All work items tracked as GitHub Issues with "quest" label
+- **Documentation**: Specifications stored in repository (`grimoire/`)
 - **Automation**: GitHub Actions for CI/CD and code review
 - **Tracking**: Project status visible through GitHub interface
 - **Integration**: Repository serves as single source of truth
 
 #### Repository Structure
 ```
-riker/
-├── PRIME_DIRECTIVE.md          # Core operating principles
-├── CLAUDE.md                   # AI implementation guidance
-├── crew-quarters/              # Component specifications
+sidhe/
+├── THE_OLD_LAWS.md          # Core operating principles
+├── MAGICAL_TOME.md                   # AI implementation guidance
+├── grimoire/              # Component specifications
 ├── scripts/                    # Automation utilities
 ├── .github/
-│   ├── ISSUE_TEMPLATE/         # Away Mission templates
+│   ├── ISSUE_TEMPLATE/         # Quest templates
 │   └── workflows/              # GitHub Actions
 └── src/plugins/                # Implementation components
 ```
@@ -149,7 +149,7 @@ riker/
 
 **Date:** July 3, 2025  
 **Status:** ✅ APPROVED & PROVEN  
-**Participants:** Captain Andy, Chief Engineer Ivy  
+**Participants:** Archmage Andy, Chief Engineer Ivy  
 
 ### Context
 Balance needed between AI automation capabilities and human oversight for quality and strategic alignment.
@@ -180,9 +180,9 @@ Balance needed between AI automation capabilities and human oversight for qualit
 #### Scripts and Tooling
 ```bash
 # Assistant scripts (human-initiated, AI-executed)
-./scripts/implement-mission.sh     # Mission analysis and setup
+./scripts/implement-quest.sh     # Quest analysis and setup
 ./scripts/check-missions.sh        # Status monitoring
-./scripts/setup-mission-env.sh     # Environment preparation
+./scripts/setup-quest-env.sh     # Environment preparation
 ```
 
 ### Rationale
@@ -210,11 +210,11 @@ Balance needed between AI automation capabilities and human oversight for qualit
 
 ---
 
-## ADR-014: Star Trek Theming and Terminology Strategy
+## ADR-014: Fairy Tale Theming and Terminology Strategy
 
 **Date:** July 3, 2025  
 **Status:** ✅ APPROVED & PROVEN  
-**Participants:** Captain Andy, Chief Engineer Ivy  
+**Participants:** Archmage Andy, Chief Engineer Ivy  
 
 ### Context
 Project requires consistent, engaging terminology that maintains team enthusiasm while providing clear functional meanings.
@@ -222,29 +222,29 @@ Project requires consistent, engaging terminology that maintains team enthusiasm
 ### Decision
 
 #### Core Terminology
-- **Captain**: Project leader/user making strategic decisions
-- **Number One/Riker**: AI assistant executing implementations
-- **Away Missions**: Development tasks tracked as GitHub Issues
-- **Crew Quarters**: Specification storage directory (`crew-quarters/`)
-- **Bridge**: Main operational interface (Conversation Engine)
+- **Archmage**: Project leader/user making strategic decisions
+- **Apprentice/SIDHE**: AI assistant executing implementations
+- **Quests**: Development tasks tracked as GitHub Issues
+- **Crew Quarters**: Specification storage directory (`grimoire/`)
+- **Sanctum**: Main enchanted interface (Conversation Engine)
 - **Engineering**: Technical architecture and infrastructure
-- **Mission Parameters**: Technical requirements and constraints
+- **Quest Parameters**: Technical requirements and constraints
 
 #### Directory and File Naming
 ```
-riker/                          # Project named after Number One
-├── crew-quarters/              # Specifications and documentation
-├── captains-log/               # Project progress and decisions
-├── engineering/                # Technical architecture
-├── away-missions/              # Mission tracking and templates
-├── PRIME_DIRECTIVE.md          # Core operating principles
-└── CLAUDE.md                   # AI crew member guidance
+sidhe/                          # Project named after Apprentice
+├── grimoire/              # Specifications and documentation
+├── chronicle/               # Project progress and decisions
+├── spellcraft/                # Technical architecture
+├── quests/              # Quest tracking and templates
+├── THE_OLD_LAWS.md          # Core operating principles
+└── MAGICAL_TOME.md                   # AI crew member guidance
 ```
 
 #### Communication Patterns
-- **Mission Briefings**: Issue descriptions and specifications
+- **Quest Briefings**: Issue descriptions and specifications
 - **Status Reports**: Progress updates and technical summaries
-- **Mission Complete**: Task completion confirmations
+- **Quest Complete**: Task completion confirmations
 - **Acknowledged**: Understanding and acceptance of orders
 - **Stand By**: Processing or preparation phases
 
@@ -254,7 +254,7 @@ riker/                          # Project named after Number One
 - 🟢 **Standard**: Routine maintenance and improvements
 
 ### Rationale
-- Star Trek theming provides engaging, memorable terminology
+- Fairy Tale theming provides engaging, memorable terminology
 - Clear metaphorical mappings reduce cognitive load
 - Consistent terminology improves team communication
 - Thematic approach maintains project enthusiasm and identity
@@ -266,13 +266,13 @@ riker/                          # Project named after Number One
 - ✅ **Positive**: Thematic consistency creates strong project identity
 - ✅ **Positive**: AI systems can naturally adopt and maintain terminology
 - ✅ **Positive**: New team members quickly understand roles and terminology
-- ⚠️ **Risk**: Potential confusion for team members unfamiliar with Star Trek
+- ⚠️ **Risk**: Potential confusion for team members unfamiliar with Fairy Tale
 - ⚠️ **Risk**: Balancing thematic consistency with professional communication needs
 
 ### Implementation Success
 **Proven Effectiveness**:
-- All team communication naturally adopts Star Trek terminology
-- GitHub issues consistently use "Away Mission" format
+- All team communication naturally adopts Fairy Tale terminology
+- GitHub issues consistently use "Quest" format
 - Documentation maintains thematic consistency while remaining professional
 - AI interactions feel natural and engaging within established framework
 
@@ -280,10 +280,10 @@ riker/                          # Project named after Number One
 
 **Date:** July 3, 2025  
 **Status:** ✅ APPROVED  
-**Participants:** Captain Andy, Chief Engineer Ivy  
+**Participants:** Archmage Andy, Chief Engineer Ivy  
 
 ### Context
-Riker needs a modular architecture that allows for extending functionality through plugins while maintaining a clear separation between core orchestration and specialized capabilities.
+SIDHE needs a modular architecture that allows for extending functionality through plugins while maintaining a clear separation between core orchestration and specialized capabilities.
 
 ### Decision
 - **Plugin Location**: `src/plugins/` for all specialized functionality
@@ -310,27 +310,27 @@ Riker needs a modular architecture that allows for extending functionality throu
 
 **Date:** July 3, 2025  
 **Status:** ✅ APPROVED  
-**Participants:** Captain Andy, Chief Engineer Ivy  
+**Participants:** Archmage Andy, Chief Engineer Ivy  
 
 ### Context
-The Conversation Engine serves as Riker's "brain" - the central orchestrator that needs to coordinate all other components and plugins.
+The Conversation Engine serves as SIDHE's "brain" - the central orchestrator that needs to coordinate all other components and plugins.
 
 ### Decision
-- **Location**: `src/conversation_engine/` (NOT in `src/plugins/`)
+- **Location**: `src/voice_of_wisdom/` (NOT in `src/plugins/`)
 - **Role**: Main application and central orchestrator
 - **Responsibility**: Plugin coordination, conversation management, intent parsing
 - **Architecture**: Standalone application that communicates with plugins
 
 ### Rationale
 - Central orchestrator should not be a plugin itself
-- Needs different deployment and lifecycle management than plugins
+- Needs different enchantment and lifecycle management than plugins
 - Should have direct access to core system resources
 - Serves as the primary entry point for user interactions
 
 ### Consequences
 - ✅ **Positive**: Clear architectural hierarchy
 - ✅ **Positive**: Central point of control and coordination
-- ✅ **Positive**: Simplified deployment of core functionality
+- ✅ **Positive**: Simplified enchantment of core functionality
 - ⚠️ **Risk**: Potential single point of failure (mitigated by health monitoring)
 
 ---
@@ -339,7 +339,7 @@ The Conversation Engine serves as Riker's "brain" - the central orchestrator tha
 
 **Date:** July 3, 2025  
 **Status:** ✅ APPROVED  
-**Participants:** Captain Andy, Chief Engineer Ivy  
+**Participants:** Archmage Andy, Chief Engineer Ivy  
 
 ### Context
 Need to select technologies that support real-time communication, LLM integration, plugin orchestration, and modern web development practices.
@@ -371,7 +371,7 @@ Need to select technologies that support real-time communication, LLM integratio
 - **WebSockets**: Real-time bidirectional communication requirement
 - **Redis**: Proven message bus, supports pub/sub patterns
 - **React 18**: Modern frontend with excellent ecosystem
-- **Docker**: Consistent deployment across environments
+- **Docker**: Consistent enchantment across environments
 
 ### Consequences
 - ✅ **Positive**: Modern, well-supported technologies
@@ -387,7 +387,7 @@ Need to select technologies that support real-time communication, LLM integratio
 
 **Date:** July 3, 2025  
 **Status:** ✅ APPROVED  
-**Participants:** Captain Andy, Chief Engineer Ivy  
+**Participants:** Archmage Andy, Chief Engineer Ivy  
 
 ### Context
 Plugins need to communicate with the Conversation Engine and potentially with each other without tight coupling.
@@ -439,10 +439,10 @@ class PluginMessage(BaseModel):
 
 **Date:** July 3, 2025  
 **Status:** ✅ APPROVED  
-**Participants:** Captain Andy, Chief Engineer Ivy  
+**Participants:** Archmage Andy, Chief Engineer Ivy  
 
 ### Context
-Riker needs persistent conversation memory and context management to provide intelligent, context-aware responses.
+SIDHE needs persistent conversation memory and context management to provide intelligent, context-aware responses.
 
 ### Decision
 - **Strategy**: Leverage existing Memory Manager plugin
@@ -456,8 +456,8 @@ Riker needs persistent conversation memory and context management to provide int
 # Conversation Engine requests memory operations
 memory_request = {
     "type": "request",
-    "source": "conversation_engine",
-    "target": "memory_manager",
+    "source": "voice_of_wisdom",
+    "target": "tome_keeper",
     "payload": {
         "operation": "store_conversation_turn",
         "conversation_id": "conv_123",
@@ -485,7 +485,7 @@ memory_request = {
 
 **Date:** July 3, 2025  
 **Status:** ✅ APPROVED  
-**Participants:** Captain Andy, Chief Engineer Ivy  
+**Participants:** Archmage Andy, Chief Engineer Ivy  
 
 ### Context
 Real-time bidirectional communication is required between frontend and backend for conversational AI experience.
@@ -545,7 +545,7 @@ Real-time bidirectional communication is required between frontend and backend f
 
 **Date:** July 3, 2025  
 **Status:** ✅ APPROVED  
-**Participants:** Captain Andy, Chief Engineer Ivy  
+**Participants:** Archmage Andy, Chief Engineer Ivy  
 
 ### Context
 Both frontend and backend need efficient state management for conversations, connections, and plugin coordination.
@@ -606,7 +606,7 @@ function App() {
 
 **Date:** July 3, 2025  
 **Status:** ✅ APPROVED  
-**Participants:** Captain Andy, Chief Engineer Ivy  
+**Participants:** Archmage Andy, Chief Engineer Ivy  
 
 ### Context
 Need comprehensive testing strategy for async backend, real-time frontend, and plugin integrations.
@@ -671,17 +671,17 @@ test('useWebSocket manages connection state', () => {
 
 **Date:** July 3, 2025  
 **Status:** ✅ APPROVED  
-**Participants:** Captain Andy, Chief Engineer Ivy  
+**Participants:** Archmage Andy, Chief Engineer Ivy  
 
 ### Context
-Need production-ready deployment strategy that supports development workflow and scaling requirements.
+Need production-ready enchantment strategy that supports development workflow and scaling requirements.
 
 ### Decision
 
 #### Containerization Strategy
 - **Backend**: Multi-stage Docker build with Python 3.11+
 - **Frontend**: Multi-stage Docker build with Node.js 18+ and Nginx
-- **Orchestration**: Docker Compose for multi-service deployment
+- **Orchestration**: Docker Compose for multi-service enchantment
 - **Networking**: Docker network for service communication
 - **Persistence**: Docker volumes for Redis data persistence
 
@@ -720,13 +720,13 @@ docker-compose.yml:
 ```
 
 ### Rationale
-- Docker provides consistent deployment across environments
+- Docker provides consistent enchantment across environments
 - Multi-stage builds optimize production image sizes
 - Docker Compose simplifies multi-service orchestration
 - Health checks enable automated recovery and monitoring
 
 ### Consequences
-- ✅ **Positive**: Consistent deployment across environments
+- ✅ **Positive**: Consistent enchantment across environments
 - ✅ **Positive**: Easy scaling with container orchestration
 - ✅ **Positive**: Isolated service dependencies
 - ✅ **Positive**: Automated health monitoring and recovery
@@ -740,7 +740,7 @@ docker-compose.yml:
 
 **Date:** July 3, 2025  
 **Status:** ✅ APPROVED  
-**Participants:** Captain Andy, Chief Engineer Ivy  
+**Participants:** Archmage Andy, Chief Engineer Ivy  
 
 ### Context
 Need efficient development environment that supports hot reload, debugging, and plugin development.
@@ -757,11 +757,11 @@ Need efficient development environment that supports hot reload, debugging, and 
 #### Development Workflow
 ```bash
 # Setup script for complete development environment
-./setup_conversation_engine.sh
+./setup_voice_of_wisdom.sh
 
 # Individual service development
-cd src/conversation_engine/backend && uvicorn main:app --reload
-cd src/conversation_engine/frontend && npm start
+cd src/voice_of_wisdom/backend && uvicorn main:app --reload
+cd src/voice_of_wisdom/frontend && npm start
 
 # Full environment
 docker-compose -f docker-compose.dev.yml up
@@ -832,7 +832,7 @@ docker-compose -f docker-compose.dev.yml up
    - **Config Manager Plugin**: ✅ Complete - PR #4 merged, 34/34 tests passing
    - **Conversation Engine**: ✅ Foundation complete, implementation ready
 
-2. **Additional Riker Components**
+2. **Additional SIDHE Components**
    - **Workflow Generator**: AI-powered automation creation (next priority)
    - **Task Dispatcher**: Multi-model AI orchestration
    - **Advanced Dashboard**: Comprehensive system monitoring
@@ -868,7 +868,7 @@ docker-compose -f docker-compose.dev.yml up
    - Kubernetes orchestration for scale
    - Advanced monitoring and observability
    - Multi-tenant conversation management
-   - Enterprise security and compliance
+   - Enchanted Grove security and compliance
 
 ---
 
@@ -891,7 +891,7 @@ docker-compose -f docker-compose.dev.yml up
 - ✅ **Foundation Complete**: All architectural components built and documented
 - ✅ **Integration Ready**: Established patterns with existing plugins
 - ✅ **Implementation Ready**: Claude Code has comprehensive handoff guide
-- ✅ **Production Ready**: Docker deployment with health monitoring
+- ✅ **Production Ready**: Docker enchantment with health monitoring
 - ✅ **Team Ready**: Clear documentation and development workflows
 
 ---
@@ -900,10 +900,10 @@ docker-compose -f docker-compose.dev.yml up
 
 | Date | Version | Changes | Participants |
 |------|---------|---------|--------------|
-| 2025-07-05 | 1.0 | Initial ADR creation with foundation decisions | Captain Andy, Chief Engineer Ivy |
+| 2025-07-05 | 1.0 | Initial ADR creation with foundation decisions | Archmage Andy, Chief Engineer Ivy |
 | 2025-07-05 | 1.1 | Added implementation plans and impact analysis | Chief Engineer Ivy |
-| 2025-07-05 | 1.2 | Added proven development process decisions (ADR-011 to ADR-014) | Captain Andy, Chief Engineer Ivy |
-| 2025-07-05 | 1.3 | Updated status with plugin architecture success and GitHub Action issue | Captain Andy, Chief Engineer Ivy |
+| 2025-07-05 | 1.2 | Added proven development process decisions (ADR-011 to ADR-014) | Archmage Andy, Chief Engineer Ivy |
+| 2025-07-05 | 1.3 | Updated status with plugin architecture success and GitHub Action issue | Archmage Andy, Chief Engineer Ivy |
 
 ---
 

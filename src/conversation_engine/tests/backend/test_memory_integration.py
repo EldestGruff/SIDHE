@@ -15,12 +15,12 @@ class TestConversationMemory:
     @pytest.fixture
     def conversation_memory(self):
         """Create conversation memory instance with mocked Memory Manager"""
-        with patch('memory_manager.plugin_interface.MemoryManager') as mock_manager:
+        with patch('tome_keeper.plugin_interface.MemoryManager') as mock_manager:
             mock_instance = MagicMock()
             mock_manager.return_value = mock_instance
             
             memory = ConversationMemory()
-            memory.memory_manager = mock_instance
+            memory.tome_keeper = mock_instance
             return memory
     
     @pytest.fixture
@@ -29,10 +29,10 @@ class TestConversationMemory:
         return {
             "user_input": "Create a new authentication system",
             "intent": {
-                "type": "mission_request",
+                "type": "quest_request",
                 "confidence": 0.85,
                 "entities": {"system": "authentication"},
-                "requires_plugins": ["github_integration"]
+                "requires_plugins": ["quest_tracker"]
             },
             "system_response": "I'll help you create an authentication system.",
             "session_id": "session_123",
@@ -43,17 +43,17 @@ class TestConversationMemory:
     @pytest.mark.asyncio
     async def test_store_turn_success(self, conversation_memory, sample_turn_data):
         """Test successful conversation turn storage"""
-        conversation_memory.memory_manager.store_memory.return_value = True
+        conversation_memory.tome_keeper.store_memory.return_value = True
         
         result = await conversation_memory.store_turn("conv_123", sample_turn_data)
         
         assert result is True
         
         # Verify store_memory was called
-        conversation_memory.memory_manager.store_memory.assert_called()
+        conversation_memory.tome_keeper.store_memory.assert_called()
         
         # Check the stored data structure
-        call_args = conversation_memory.memory_manager.store_memory.call_args
+        call_args = conversation_memory.tome_keeper.store_memory.call_args
         stored_key = call_args[0][0]
         stored_data = call_args[0][1]
         
@@ -72,17 +72,17 @@ class TestConversationMemory:
     @pytest.mark.asyncio
     async def test_store_turn_failure(self, conversation_memory, sample_turn_data):
         """Test conversation turn storage failure"""
-        conversation_memory.memory_manager.store_memory.return_value = False
+        conversation_memory.tome_keeper.store_memory.return_value = False
         
         result = await conversation_memory.store_turn("conv_123", sample_turn_data)
         
         assert result is False
     
     @pytest.mark.asyncio
-    async def test_store_turn_no_memory_manager(self, sample_turn_data):
+    async def test_store_turn_no_tome_keeper(self, sample_turn_data):
         """Test storing turn when memory manager is not available"""
         memory = ConversationMemory()
-        memory.memory_manager = None
+        memory.tome_keeper = None
         
         result = await memory.store_turn("conv_123", sample_turn_data)
         
@@ -91,7 +91,7 @@ class TestConversationMemory:
     @pytest.mark.asyncio
     async def test_store_turn_exception(self, conversation_memory, sample_turn_data):
         """Test handling exceptions during turn storage"""
-        conversation_memory.memory_manager.store_memory.side_effect = Exception("Storage error")
+        conversation_memory.tome_keeper.store_memory.side_effect = Exception("Storage error")
         
         result = await conversation_memory.store_turn("conv_123", sample_turn_data)
         
@@ -123,8 +123,8 @@ class TestConversationMemory:
             },
             {
                 "turn_id": "turn_3",
-                "user_input": "Create a mission",
-                "intent": {"type": "mission_request"},
+                "user_input": "Create a quest",
+                "intent": {"type": "quest_request"},
                 "timestamp": "2025-01-01T10:02:00Z"
             }
         ]
@@ -140,7 +140,7 @@ class TestConversationMemory:
                 return mock_turns[2]
             return None
         
-        conversation_memory.memory_manager.get_memory.side_effect = mock_get_memory
+        conversation_memory.tome_keeper.get_memory.side_effect = mock_get_memory
         
         history = await conversation_memory.get_conversation_history("conv_123", limit=10)
         
@@ -149,22 +149,22 @@ class TestConversationMemory:
         assert history[1]["turn_id"] == "turn_2"
         assert history[2]["turn_id"] == "turn_3"
         assert history[0]["user_input"] == "Hello"
-        assert history[2]["intent"]["type"] == "mission_request"
+        assert history[2]["intent"]["type"] == "quest_request"
     
     @pytest.mark.asyncio
     async def test_get_conversation_history_no_metadata(self, conversation_memory):
         """Test conversation history retrieval when no metadata exists"""
-        conversation_memory.memory_manager.get_memory.return_value = None
+        conversation_memory.tome_keeper.get_memory.return_value = None
         
         history = await conversation_memory.get_conversation_history("conv_123")
         
         assert history == []
     
     @pytest.mark.asyncio
-    async def test_get_conversation_history_no_memory_manager(self):
+    async def test_get_conversation_history_no_tome_keeper(self):
         """Test conversation history retrieval when memory manager is not available"""
         memory = ConversationMemory()
-        memory.memory_manager = None
+        memory.tome_keeper = None
         
         history = await memory.get_conversation_history("conv_123")
         
@@ -193,7 +193,7 @@ class TestConversationMemory:
                 return mock_turns[1]
             return None
         
-        conversation_memory.memory_manager.get_memory.side_effect = mock_get_memory
+        conversation_memory.tome_keeper.get_memory.side_effect = mock_get_memory
         
         history = await conversation_memory.get_conversation_history("conv_123", limit=2)
         
@@ -215,7 +215,7 @@ class TestConversationMemory:
             {
                 "turn_id": "turn_2",
                 "user_input": "Create auth system",
-                "intent": {"type": "mission_request", "entities": {"system": "authentication"}},
+                "intent": {"type": "quest_request", "entities": {"system": "authentication"}},
                 "timestamp": "2025-01-01T10:01:00Z"
             }
         ]
@@ -230,9 +230,9 @@ class TestConversationMemory:
         assert context["last_activity"] == "2025-01-01T10:01:00Z"
         assert "greeting" in context["topics"]
         assert "authentication" in context["topics"]
-        assert "mission_request" in context["topics"]
+        assert "quest_request" in context["topics"]
         assert "greeting" in context["active_intents"]
-        assert "mission_request" in context["active_intents"]
+        assert "quest_request" in context["active_intents"]
     
     @pytest.mark.asyncio
     async def test_build_context_no_history(self, conversation_memory):
@@ -264,8 +264,8 @@ class TestConversationMemory:
                 return existing_metadata
             return None
         
-        conversation_memory.memory_manager.get_memory.side_effect = mock_get_memory
-        conversation_memory.memory_manager.store_memory.return_value = True
+        conversation_memory.tome_keeper.get_memory.side_effect = mock_get_memory
+        conversation_memory.tome_keeper.store_memory.return_value = True
         
         turn_data = {
             "turn_id": "turn_2",
@@ -277,10 +277,10 @@ class TestConversationMemory:
         assert result is True
         
         # Verify store_memory was called
-        conversation_memory.memory_manager.store_memory.assert_called()
+        conversation_memory.tome_keeper.store_memory.assert_called()
         
         # Check updated metadata
-        call_args = conversation_memory.memory_manager.store_memory.call_args
+        call_args = conversation_memory.tome_keeper.store_memory.call_args
         stored_metadata = call_args[0][1]
         
         assert stored_metadata["conversation_id"] == "conv_123"
@@ -292,8 +292,8 @@ class TestConversationMemory:
     @pytest.mark.asyncio
     async def test_update_conversation_metadata_new_conversation(self, conversation_memory):
         """Test metadata update for new conversation"""
-        conversation_memory.memory_manager.get_memory.return_value = None
-        conversation_memory.memory_manager.store_memory.return_value = True
+        conversation_memory.tome_keeper.get_memory.return_value = None
+        conversation_memory.tome_keeper.store_memory.return_value = True
         
         turn_data = {
             "turn_id": "turn_1",
@@ -305,7 +305,7 @@ class TestConversationMemory:
         assert result is True
         
         # Check new metadata structure
-        call_args = conversation_memory.memory_manager.store_memory.call_args
+        call_args = conversation_memory.tome_keeper.store_memory.call_args
         stored_metadata = call_args[0][1]
         
         assert stored_metadata["conversation_id"] == "conv_123"
@@ -320,7 +320,7 @@ class TestConversationMemory:
         turns = [
             {
                 "intent": {
-                    "type": "mission_request",
+                    "type": "quest_request",
                     "entities": {
                         "system": "authentication",
                         "technology": "OAuth2",
@@ -344,40 +344,40 @@ class TestConversationMemory:
         assert "OAuth2" in topics
         assert "PostgreSQL" in topics
         assert "plugins" in topics
-        assert "mission_request" in topics
+        assert "quest_request" in topics
         assert "question" in topics
     
     def test_extract_recent_intents(self, conversation_memory):
         """Test recent intent extraction"""
         turns = [
             {"intent": {"type": "greeting"}},
-            {"intent": {"type": "mission_request"}},
+            {"intent": {"type": "quest_request"}},
             {"intent": {"type": "question"}},
-            {"intent": {"type": "mission_request"}}  # Duplicate
+            {"intent": {"type": "quest_request"}}  # Duplicate
         ]
         
         intents = conversation_memory._extract_recent_intents(turns)
         
         assert "greeting" in intents
-        assert "mission_request" in intents
+        assert "quest_request" in intents
         assert "question" in intents
         assert len(intents) == 3  # No duplicates
     
     @pytest.mark.asyncio
     async def test_health_check_operational(self, conversation_memory):
-        """Test health check when operational"""
-        conversation_memory.memory_manager.store_memory.return_value = True
-        conversation_memory.memory_manager.get_memory.return_value = {"timestamp": "2025-01-01T00:00:00Z"}
+        """Test health check when enchanted"""
+        conversation_memory.tome_keeper.store_memory.return_value = True
+        conversation_memory.tome_keeper.get_memory.return_value = {"timestamp": "2025-01-01T00:00:00Z"}
         
         health = await conversation_memory.health_check()
         
-        assert health == "operational"
+        assert health == "enchanted"
     
     @pytest.mark.asyncio
     async def test_health_check_degraded(self, conversation_memory):
         """Test health check when degraded"""
-        conversation_memory.memory_manager.store_memory.return_value = True
-        conversation_memory.memory_manager.get_memory.return_value = None
+        conversation_memory.tome_keeper.store_memory.return_value = True
+        conversation_memory.tome_keeper.get_memory.return_value = None
         
         health = await conversation_memory.health_check()
         
@@ -386,7 +386,7 @@ class TestConversationMemory:
     @pytest.mark.asyncio
     async def test_health_check_error(self, conversation_memory):
         """Test health check with error"""
-        conversation_memory.memory_manager.store_memory.return_value = False
+        conversation_memory.tome_keeper.store_memory.return_value = False
         
         health = await conversation_memory.health_check()
         
@@ -396,7 +396,7 @@ class TestConversationMemory:
     async def test_health_check_disconnected(self):
         """Test health check when disconnected"""
         memory = ConversationMemory()
-        memory.memory_manager = None
+        memory.tome_keeper = None
         
         health = await memory.health_check()
         
@@ -405,7 +405,7 @@ class TestConversationMemory:
     @pytest.mark.asyncio
     async def test_health_check_exception(self, conversation_memory):
         """Test health check with exception"""
-        conversation_memory.memory_manager.store_memory.side_effect = Exception("Memory error")
+        conversation_memory.tome_keeper.store_memory.side_effect = Exception("Memory error")
         
         health = await conversation_memory.health_check()
         

@@ -30,7 +30,7 @@ assignees: ''
 
 ### Environment
 - OS: [e.g., Ubuntu 25.04]
-- Riker Version: [e.g., 0.1.0]
+- SIDHE Version: [e.g., 0.1.0]
 - Related Components: [e.g., Conversation Engine]
 
 ## 📸 Evidence

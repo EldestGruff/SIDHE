@@ -2,11 +2,11 @@
 Conversation Engine Backend - Foundation
 FastAPI application with WebSocket support for real-time communication
 
-This is the central orchestrator for Riker's conversational AI system.
+This is the central orchestrator for SIDHE's conversational AI system.
 It coordinates between plugins through a Redis message bus and provides
 a WebSocket interface for real-time communication with the React frontend.
 
-Architecture Decision: Located at src/conversation_engine/ (not src/plugins/)
+Architecture Decision: Located at src/voice_of_wisdom/ (not src/plugins/)
 because this is the main application that orchestrates all plugins, not a plugin itself.
 """
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
@@ -35,7 +35,7 @@ PluginRegistry = None
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="Riker Conversation Engine",
+    title="SIDHE Conversation Engine",
     description="Central orchestrator for conversational AI development",
     version="0.1.0"
 )
@@ -79,13 +79,13 @@ async def startup_event():
 @app.get("/")
 async def root():
     """Health check endpoint"""
-    return {"message": "Riker Conversation Engine - Ready to engage!"}
+    return {"message": "SIDHE Conversation Engine - Ready to engage!"}
 
 @app.get("/health")
 async def health_check():
     """Detailed health check with component status"""
     return {
-        "status": "operational",
+        "status": "enchanted",
         "components": {
             "websocket": "ready",
             "message_bus": await message_bus.health_check(),
@@ -103,7 +103,7 @@ async def websocket_endpoint(websocket: WebSocket):
     # Send connection established message
     await websocket.send_text(json.dumps({
         "type": "connection_established",
-        "message": "Connected to Riker - Ready for conversation!"
+        "message": "Connected to SIDHE - Ready for conversation!"
     }))
     
     try:
@@ -215,11 +215,11 @@ async def route_to_plugins(intent, message: Dict[str, Any]) -> Dict[str, Any]:
     # Based on the intent, route to appropriate plugins
     
     try:
-        if intent.type == "mission_request":
+        if intent.type == "quest_request":
             # Route to GitHub Integration plugin
             response = await message_bus.request_response(
-                "github_integration",
-                "create_mission",
+                "quest_tracker",
+                "create_quest",
                 {"intent": intent.dict(), "message": message}
             )
         elif intent.type == "status_check":
@@ -263,18 +263,18 @@ async def handle_status_request(intent: ConversationIntent, message: Dict[str, A
         # Determine what status is being requested
         user_input = message["content"].lower()
         
-        if "mission" in user_input:
-            # Route to GitHub Integration for mission status
-            if "github_integration" in intent.requires_plugins:
+        if "quest" in user_input:
+            # Route to GitHub Integration for quest status
+            if "quest_tracker" in intent.requires_plugins:
                 response = await message_bus.request_response(
-                    "github_integration",
-                    "get_mission_status",
+                    "quest_tracker",
+                    "get_quest_status",
                     {"intent": intent.dict(), "message": message}
                 )
             else:
                 response = {
                     "type": "status_response",
-                    "content": "To check mission status, I'll need to connect to GitHub. Let me check the available missions for you.",
+                    "content": "To check quest status, I'll need to connect to GitHub. Let me check the available missions for you.",
                     "intent": intent.dict()
                 }
         elif "system" in user_input or "health" in user_input:
@@ -314,7 +314,7 @@ async def handle_question(intent: ConversationIntent, message: Dict[str, Any]) -
             # Architecture/system questions
             response = {
                 "type": "answer",
-                "content": "I'm Riker, your AI development assistant. I can help you manage missions, check system status, create new features, and discuss architectural decisions. I coordinate between different plugins like GitHub Integration, Memory Manager, and Config Manager to help you build software more efficiently.\n\nWhat would you like to know more about?",
+                "content": "I'm SIDHE, your AI development assistant. I can help you manage missions, check system status, create new features, and discuss architectural decisions. I coordinate between different plugins like GitHub Integration, Memory Manager, and Config Manager to help you build software more efficiently.\n\nWhat would you like to know more about?",
                 "intent": intent.dict()
             }
         elif "plugin" in user_input:
@@ -331,7 +331,7 @@ async def handle_question(intent: ConversationIntent, message: Dict[str, Any]) -
             # General questions - try to be helpful
             response = {
                 "type": "answer",
-                "content": "I'm here to help! I can assist with:\n\n• Creating and managing development missions\n• Checking system and mission status\n• Discussing architecture and implementation approaches\n• Troubleshooting issues\n\nWhat specific question do you have?",
+                "content": "I'm here to help! I can assist with:\n\n• Creating and managing development missions\n• Checking system and quest status\n• Discussing architecture and implementation approaches\n• Troubleshooting issues\n\nWhat specific question do you have?",
                 "intent": intent.dict()
             }
             
@@ -352,17 +352,17 @@ async def handle_command(intent: ConversationIntent, message: Dict[str, Any]) ->
         # Parse commands and route to appropriate plugins
         user_input = message["content"].lower()
         
-        if "create mission" in user_input or "new mission" in user_input:
+        if "create quest" in user_input or "new quest" in user_input:
             # Route to GitHub Integration
             response = await message_bus.request_response(
-                "github_integration",
-                "create_mission",
+                "quest_tracker",
+                "create_quest",
                 {"intent": intent.dict(), "message": message}
             )
         else:
             response = {
                 "type": "command_response",
-                "content": "I can help with commands like 'create mission', 'show status', etc. What command would you like to run?",
+                "content": "I can help with commands like 'create quest', 'show status', etc. What command would you like to run?",
                 "intent": intent.dict()
             }
             
@@ -397,7 +397,7 @@ async def get_system_health() -> Dict[str, Any]:
     """Get current system health status"""
     try:
         return {
-            "status": "operational",
+            "status": "enchanted",
             "components": {
                 "websocket": "ready",
                 "message_bus": await message_bus.health_check(),

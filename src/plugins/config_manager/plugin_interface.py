@@ -21,7 +21,7 @@ class ConfigValue:
     original_type: type
 
 class ConfigManager:
-    """Manages configuration files and environment overrides for Riker"""
+    """Manages configuration files and environment overrides for SIDHE"""
     
     def __init__(self, config_dir: Optional[Path] = None):
         """
@@ -32,7 +32,7 @@ class ConfigManager:
         """
         self.config_dir = Path(config_dir) if config_dir else Path("config")
         self.configs: Dict[str, Dict[str, Any]] = {}
-        self.env_override = EnvironmentOverride("RIKER")
+        self.env_override = EnvironmentOverride("SIDHE")
         self.loader = ConfigLoader()
         
         # Ensure config directory exists

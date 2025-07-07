@@ -2,50 +2,50 @@ import click
 import json
 import sys
 from typing import Dict, Any
-from .plugin_interface import GitHubManager
-from .mission_parser import MissionParser
+from .plugin_interface import QuestTracker
+from .quest_parser import QuestParser
 
 @click.group()
 def cli():
-    """Riker GitHub Integration CLI"""
+    """SIDHE GitHub Integration CLI"""
     pass
 
 @cli.command()
-@click.option('--state', default='open', help='Mission state: open, closed, all')
+@click.option('--state', default='open', help='Quest state: open, closed, all')
 @click.option('--format', 'output_format', default='table', help='Output format: table, json')
-def list_missions(state, output_format):
-    """List all Away Missions"""
+def list_quests(state, output_format):
+    """List all Quests"""
     try:
-        manager = GitHubManager()
-        missions = manager.get_away_missions(state)
+        manager = QuestTracker()
+        missions = manager.get_away_quests(state)
         
         if output_format == 'json':
             click.echo(json.dumps(missions, indent=2))
         else:
             if not missions:
-                click.echo(f"No away missions found in state: {state}")
+                click.echo(f"No quests found in state: {state}")
                 return
             
-            click.echo(f"\n🚀 Away Missions ({state.upper()})")
+            click.echo(f"\n🚀 Quests ({state.upper()})")
             click.echo("=" * 50)
             
-            for mission in missions:
-                click.echo(f"\n#{mission['number']}: {mission['title']}")
-                click.echo(f"  Mission ID: {mission['mission_id']}")
-                click.echo(f"  Status: {mission['state']}")
-                click.echo(f"  Priority: {mission['classification']}")
-                click.echo(f"  Type: {mission['mission_type']}")
-                click.echo(f"  URL: {mission['url']}")
+            for quest in missions:
+                click.echo(f"\n#{quest['number']}: {quest['title']}")
+                click.echo(f"  Quest ID: {quest['quest_id']}")
+                click.echo(f"  Status: {quest['state']}")
+                click.echo(f"  Priority: {quest['classification']}")
+                click.echo(f"  Type: {quest['quest_type']}")
+                click.echo(f"  URL: {quest['url']}")
                 
-                if mission['objectives']:
+                if quest['objectives']:
                     click.echo("  Objectives:")
-                    for obj in mission['objectives']:
+                    for obj in quest['objectives']:
                         marker = "🎯" if obj['is_primary'] else "  •"
                         click.echo(f"    {marker} {obj['description']}")
                 
-                if mission['acceptance_criteria']:
-                    pending = sum(1 for ac in mission['acceptance_criteria'] if not ac['is_complete'])
-                    total = len(mission['acceptance_criteria'])
+                if quest['acceptance_criteria']:
+                    pending = sum(1 for ac in quest['acceptance_criteria'] if not ac['is_complete'])
+                    total = len(quest['acceptance_criteria'])
                     click.echo(f"  Acceptance Criteria: {total - pending}/{total} complete")
                 
                 click.echo()
@@ -55,112 +55,112 @@ def list_missions(state, output_format):
         sys.exit(1)
 
 @cli.command()
-@click.argument('mission_number', type=int)
+@click.argument('quest_number', type=int)
 @click.option('--format', 'output_format', default='detailed', help='Output format: detailed, json')
-def show_mission(mission_number, output_format):
-    """Show detailed mission information"""
+def show_quest(quest_number, output_format):
+    """Show detailed quest information"""
     try:
-        manager = GitHubManager()
-        mission = manager.get_mission_details(mission_number)
+        manager = QuestTracker()
+        quest = manager.get_quest_details(quest_number)
         
         if output_format == 'json':
-            click.echo(json.dumps(mission, indent=2))
+            click.echo(json.dumps(quest, indent=2))
         else:
-            _print_mission_details(mission)
+            _print_quest_details(quest)
     
     except Exception as e:
         click.echo(f"Error: {e}", err=True)
         sys.exit(1)
 
 @cli.command()
-@click.argument('mission_number', type=int)
-def start_mission(mission_number):
-    """Start working on a mission (create branch, update status)"""
+@click.argument('quest_number', type=int)
+def start_quest(quest_number):
+    """Start working on a quest (create branch, update status)"""
     try:
-        manager = GitHubManager()
+        manager = QuestTracker()
         
-        # Get mission details
-        mission = manager.get_mission_details(mission_number)
+        # Get quest details
+        quest = manager.get_quest_details(quest_number)
         
-        click.echo(f"Starting mission #{mission_number}: {mission['title']}")
+        click.echo(f"Starting quest #{quest_number}: {quest['title']}")
         
         # Create feature branch
         branch_name = manager.create_feature_branch(
-            mission_number, 
-            mission['title']
+            quest_number, 
+            quest['title']
         )
         
-        # Update mission status
-        manager.update_mission_progress(
-            mission_number,
+        # Update quest status
+        manager.update_quest_progress(
+            quest_number,
             "in-progress",
-            f"Number One has begun implementation on branch `{branch_name}`"
+            f"Apprentice has begun implementation on branch `{branch_name}`"
         )
         
-        click.echo(f"✅ Mission #{mission_number} started on branch: {branch_name}")
-        click.echo(f"🔗 Mission URL: {mission['url']}")
+        click.echo(f"✅ Quest #{quest_number} started on branch: {branch_name}")
+        click.echo(f"🔗 Quest URL: {quest['url']}")
         click.echo(f"\nNext steps:")
         click.echo(f"1. git checkout {branch_name}")
-        click.echo(f"2. Implement the mission objectives")
-        click.echo(f"3. Run: riker-github complete-mission {mission_number}")
+        click.echo(f"2. Implement the quest objectives")
+        click.echo(f"3. Run: sidhe-github complete-quest {quest_number}")
     
     except Exception as e:
         click.echo(f"Error: {e}", err=True)
         sys.exit(1)
 
 @cli.command()
-@click.argument('mission_number', type=int)
+@click.argument('quest_number', type=int)
 @click.option('--summary', prompt='Changes summary', help='Summary of changes made')
-def complete_mission(mission_number, summary):
-    """Complete a mission (create PR, update status)"""
+def complete_quest(quest_number, summary):
+    """Complete a quest (create PR, update status)"""
     try:
-        manager = GitHubManager()
+        manager = QuestTracker()
         
-        # Get mission details
-        mission = manager.get_mission_details(mission_number)
+        # Get quest details
+        quest = manager.get_quest_details(quest_number)
         
-        click.echo(f"Completing mission #{mission_number}: {mission['title']}")
+        click.echo(f"Completing quest #{quest_number}: {quest['title']}")
         
         # Determine branch name
-        branch_name = f"away-mission-{mission_number}-{mission['title'][:30].replace(' ', '-').lower()}"
+        branch_name = f"quest-{quest_number}-{quest['title'][:30].replace(' ', '-').lower()}"
         
         # Create PR
         pr_number = manager.create_pull_request(
-            mission_number,
+            quest_number,
             branch_name,
             summary
         )
         
-        # Update mission status
-        manager.update_mission_progress(
-            mission_number,
+        # Update quest status
+        manager.update_quest_progress(
+            quest_number,
             "complete",
-            f"Mission completed. Pull request #{pr_number} created for review."
+            f"Quest completed. Pull request #{pr_number} created for review."
         )
         
-        click.echo(f"✅ Mission #{mission_number} completed!")
+        click.echo(f"✅ Quest #{quest_number} completed!")
         click.echo(f"📋 Pull Request #{pr_number} created")
-        click.echo(f"🔗 Mission URL: {mission['url']}")
+        click.echo(f"🔗 Quest URL: {quest['url']}")
     
     except Exception as e:
         click.echo(f"Error: {e}", err=True)
         sys.exit(1)
 
 @cli.command()
-@click.argument('mission_number', type=int)
+@click.argument('quest_number', type=int)
 @click.argument('status')
 @click.option('--details', default='', help='Additional details about the status update')
-def update_status(mission_number, status, details):
-    """Update mission status"""
+def update_status(quest_number, status, details):
+    """Update quest status"""
     try:
-        manager = GitHubManager()
+        manager = QuestTracker()
         
-        success = manager.update_mission_progress(mission_number, status, details)
+        success = manager.update_quest_progress(quest_number, status, details)
         
         if success:
-            click.echo(f"✅ Mission #{mission_number} status updated to: {status}")
+            click.echo(f"✅ Quest #{quest_number} status updated to: {status}")
         else:
-            click.echo(f"❌ Failed to update mission #{mission_number} status")
+            click.echo(f"❌ Failed to update quest #{quest_number} status")
             sys.exit(1)
     
     except Exception as e:
@@ -172,7 +172,7 @@ def update_status(mission_number, status, details):
 def get_spec(spec_path):
     """Get specification file content"""
     try:
-        manager = GitHubManager()
+        manager = QuestTracker()
         content = manager.get_specification(spec_path)
         click.echo(content)
     
@@ -184,7 +184,7 @@ def get_spec(spec_path):
 def test_connection():
     """Test GitHub connection and authentication"""
     try:
-        manager = GitHubManager()
+        manager = QuestTracker()
         click.echo("✅ GitHub connection successful!")
         click.echo(f"Repository: {manager.repo_name}")
         click.echo(f"API Rate Limit: {manager.github.get_rate_limit().core.remaining}")
@@ -193,24 +193,24 @@ def test_connection():
         click.echo(f"❌ Connection failed: {e}", err=True)
         sys.exit(1)
 
-def _print_mission_details(mission: Dict[str, Any]):
-    """Print detailed mission information in a formatted way"""
-    click.echo(f"\n🚀 Mission #{mission['number']}: {mission['title']}")
+def _print_quest_details(quest: Dict[str, Any]):
+    """Print detailed quest information in a formatted way"""
+    click.echo(f"\n🚀 Quest #{quest['number']}: {quest['title']}")
     click.echo("=" * 60)
     
     # Basic info
-    click.echo(f"Mission ID: {mission['mission_id']}")
-    click.echo(f"Classification: {mission['classification']}")
-    click.echo(f"Type: {mission['mission_type']}")
-    click.echo(f"Status: {mission['state']}")
-    click.echo(f"URL: {mission['url']}")
-    click.echo(f"Created: {mission['created_at']}")
-    click.echo(f"Updated: {mission['updated_at']}")
+    click.echo(f"Quest ID: {quest['quest_id']}")
+    click.echo(f"Classification: {quest['classification']}")
+    click.echo(f"Type: {quest['quest_type']}")
+    click.echo(f"Status: {quest['state']}")
+    click.echo(f"URL: {quest['url']}")
+    click.echo(f"Created: {quest['created_at']}")
+    click.echo(f"Updated: {quest['updated_at']}")
     
     # Objectives
-    if mission['objectives']:
-        click.echo(f"\n🎯 Mission Objectives:")
-        for obj in mission['objectives']:
+    if quest['objectives']:
+        click.echo(f"\n🎯 Quest Objectives:")
+        for obj in quest['objectives']:
             marker = "🎯 PRIMARY" if obj['is_primary'] else "  • Secondary"
             click.echo(f"  {marker}: {obj['description']}")
             
@@ -219,28 +219,28 @@ def _print_mission_details(mission: Dict[str, Any]):
                     click.echo(f"    - {sub_obj}")
     
     # Technical Specs
-    if mission['technical_specs']:
+    if quest['technical_specs']:
         click.echo(f"\n🔧 Technical Specifications:")
-        for key, value in mission['technical_specs'].items():
+        for key, value in quest['technical_specs'].items():
             click.echo(f"  {key}: {value}")
     
     # Acceptance Criteria
-    if mission['acceptance_criteria']:
+    if quest['acceptance_criteria']:
         click.echo(f"\n📋 Acceptance Criteria:")
-        for ac in mission['acceptance_criteria']:
+        for ac in quest['acceptance_criteria']:
             status = "✅" if ac['is_complete'] else "❌"
             click.echo(f"  {status} {ac['description']}")
     
     # Referenced Docs
-    if mission['referenced_docs']:
+    if quest['referenced_docs']:
         click.echo(f"\n📄 Referenced Documentation:")
-        for doc in mission['referenced_docs']:
+        for doc in quest['referenced_docs']:
             click.echo(f"  • {doc}")
     
-    # Captain's Notes
-    if mission.get('captains_notes'):
-        click.echo(f"\n👨‍✈️ Captain's Notes:")
-        click.echo(f"  {mission['captains_notes']}")
+    # Archmage's Notes
+    if quest.get('captains_notes'):
+        click.echo(f"\n👨‍✈️ Archmage's Notes:")
+        click.echo(f"  {quest['captains_notes']}")
     
     click.echo()
 

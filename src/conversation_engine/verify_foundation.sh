@@ -15,17 +15,17 @@ MISSING=0
 
 # Check artifacts
 declare -A files=(
-    ["crew-quarters/conversation-engine-spec.md"]="Specification"
-    ["src/conversation_engine/docs/claude-handoff.md"]="Handoff Guide"
-    ["src/conversation_engine/backend/main.py"]="Backend Main"
-    ["src/conversation_engine/backend/config/settings.py"]="Backend Settings"
-    ["src/conversation_engine/backend/requirements.txt"]="Backend Requirements"
-    ["src/conversation_engine/backend/intent/models.py"]="Intent Models"
-    ["src/conversation_engine/backend/websocket/connection.py"]="WebSocket Connection"
-    ["src/conversation_engine/frontend/package.json"]="Frontend Package"
-    ["src/conversation_engine/frontend/src/App.jsx"]="Frontend App"
-    ["src/conversation_engine/frontend/src/components/Chat/ChatInterface.jsx"]="Chat Interface"
-    ["src/conversation_engine/docker/docker-compose.yml"]="Docker Compose"
+    ["grimoire/conversation-engine-spec.md"]="Specification"
+    ["src/voice_of_wisdom/docs/claude-handoff.md"]="Handoff Guide"
+    ["src/voice_of_wisdom/backend/main.py"]="Backend Main"
+    ["src/voice_of_wisdom/backend/config/settings.py"]="Backend Settings"
+    ["src/voice_of_wisdom/backend/requirements.txt"]="Backend Requirements"
+    ["src/voice_of_wisdom/backend/intent/models.py"]="Intent Models"
+    ["src/voice_of_wisdom/backend/websocket/connection.py"]="WebSocket Connection"
+    ["src/voice_of_wisdom/frontend/package.json"]="Frontend Package"
+    ["src/voice_of_wisdom/frontend/src/App.jsx"]="Frontend App"
+    ["src/voice_of_wisdom/frontend/src/components/Chat/ChatInterface.jsx"]="Chat Interface"
+    ["src/voice_of_wisdom/docker/docker-compose.yml"]="Docker Compose"
 )
 
 for file in "${!files[@]}"; do
@@ -43,8 +43,8 @@ if [[ $MISSING -eq 0 ]]; then
     echo ""
     echo "📋 Next Steps:"
     echo "1. Update .env file with your Anthropic API key"
-    echo "2. Create Away Mission from: .github/ISSUE_TEMPLATE/conversation-engine-mission.md"
-    echo "3. Read handoff guide: src/conversation_engine/docs/claude-handoff.md"
+    echo "2. Create Quest from: .github/ISSUE_TEMPLATE/conversation-engine-quest.md"
+    echo "3. Read handoff guide: src/voice_of_wisdom/docs/claude-handoff.md"
     echo ""
     echo "🚀 Ready for Claude Code implementation!"
 else

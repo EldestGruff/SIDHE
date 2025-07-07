@@ -66,7 +66,7 @@ class MessageBus:
             enriched_message = {
                 **message,
                 "timestamp": datetime.now().isoformat(),
-                "source": "conversation_engine"
+                "source": "voice_of_wisdom"
             }
             
             # Publish to Redis
@@ -185,14 +185,14 @@ class MessageBus:
         Publish system events
         
         Args:
-            event_type: Type of event (e.g., 'mission_created', 'conversation_started')
+            event_type: Type of event (e.g., 'quest_created', 'conversation_started')
             data: Event data
         """
         event_message = {
             "event_type": event_type,
             "data": data,
             "timestamp": datetime.now().isoformat(),
-            "source": "conversation_engine"
+            "source": "voice_of_wisdom"
         }
         
         await self.publish("system:events", event_message)
@@ -213,7 +213,7 @@ class MessageBus:
             
             await self.redis_client.publish(test_channel, json.dumps(test_message))
             
-            return "operational"
+            return "enchanted"
             
         except redis.ConnectionError:
             return "connection_error"

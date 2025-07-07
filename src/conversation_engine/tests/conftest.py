@@ -74,13 +74,13 @@ def mock_redis_client():
     return client
 
 @pytest.fixture
-def mock_memory_manager():
+def mock_tome_keeper():
     """Mock Memory Manager plugin"""
     manager = MagicMock()
     manager.store_memory = MagicMock(return_value=True)
     manager.get_memory = MagicMock(return_value=None)
     manager.clear_memory = MagicMock(return_value=True)
-    manager.health_check = MagicMock(return_value="operational")
+    manager.health_check = MagicMock(return_value="enchanted")
     return manager
 
 @pytest.fixture
@@ -92,7 +92,7 @@ def sample_conversation_intent():
         type=IntentType.MISSION_REQUEST,
         confidence=0.85,
         entities={"system": "authentication", "technology": "OAuth2"},
-        requires_plugins=["github_integration"],
+        requires_plugins=["quest_tracker"],
         context_needed=[],
         complexity=ComplexityLevel.COMPLEX,
         estimated_response_time=15,
@@ -110,7 +110,7 @@ def sample_conversation_data():
             {
                 "id": 1,
                 "type": "user",
-                "content": "Hello Riker",
+                "content": "Hello SIDHE",
                 "timestamp": "2025-01-01T10:00:00Z",
                 "intent": {"type": "greeting", "confidence": 0.9}
             },
@@ -129,10 +129,10 @@ def sample_turn_data():
     return {
         "user_input": "Create a new authentication system",
         "intent": {
-            "type": "mission_request",
+            "type": "quest_request",
             "confidence": 0.85,
             "entities": {"system": "authentication"},
-            "requires_plugins": ["github_integration"]
+            "requires_plugins": ["quest_tracker"]
         },
         "system_response": "I'll help you create an authentication system.",
         "session_id": "session_123",
@@ -179,8 +179,8 @@ async def async_mock():
 def mock_plugin_instances():
     """Mock plugin instances for registry testing"""
     return {
-        "memory_manager": MagicMock(),
-        "github_integration": MagicMock(),
+        "tome_keeper": MagicMock(),
+        "quest_tracker": MagicMock(),
         "config_manager": MagicMock()
     }
 
@@ -188,11 +188,11 @@ def mock_plugin_instances():
 def mock_plugin_data():
     """Mock plugin data structure"""
     return {
-        "memory_manager": {
+        "tome_keeper": {
             "info": {
                 "name": "Memory Manager",
                 "description": "Conversation memory and context management",
-                "module": "memory_manager.plugin_interface",
+                "module": "tome_keeper.plugin_interface",
                 "class": "MemoryManager",
                 "capabilities": ["store_memory", "get_memory", "clear_memory"]
             },
@@ -200,13 +200,13 @@ def mock_plugin_data():
             "instance": MagicMock(),
             "last_check": "2025-01-01T00:00:00Z"
         },
-        "github_integration": {
+        "quest_tracker": {
             "info": {
                 "name": "GitHub Integration",
-                "description": "Away Mission management and GitHub operations",
-                "module": "github_integration.plugin_interface", 
-                "class": "GitHubManager",
-                "capabilities": ["get_away_missions", "create_mission", "update_mission_progress"]
+                "description": "Quest management and GitHub operations",
+                "module": "quest_tracker.plugin_interface", 
+                "class": "QuestTracker",
+                "capabilities": ["get_away_quests", "create_quest", "update_quest_progress"]
             },
             "status": "active",
             "instance": MagicMock(),

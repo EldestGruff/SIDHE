@@ -7,12 +7,12 @@ logger = logging.getLogger(__name__)
 class EnvironmentOverride:
     """Handles environment variable overrides for configuration"""
     
-    def __init__(self, prefix: str = "RIKER"):
+    def __init__(self, prefix: str = "SIDHE"):
         """
         Initialize with environment variable prefix
         
         Args:
-            prefix: Prefix for environment variables (e.g., "RIKER")
+            prefix: Prefix for environment variables (e.g., "SIDHE")
         """
         self.prefix = prefix.upper()
         logger.debug(f"EnvironmentOverride initialized with prefix: {self.prefix}")

@@ -34,7 +34,7 @@ class TestMainApplication:
         response = client.get("/health")
         assert response.status_code == 200
         data = response.json()
-        assert data["status"] == "operational"
+        assert data["status"] == "enchanted"
         assert "components" in data
         assert "websocket" in data["components"]
         assert "message_bus" in data["components"]
@@ -46,17 +46,17 @@ class TestMainApplication:
         response = client.get("/")
         assert response.status_code == 200
         data = response.json()
-        assert "Riker Conversation Engine" in data["message"]
+        assert "SIDHE Conversation Engine" in data["message"]
         assert "Ready to engage" in data["message"]
     
     @pytest.mark.asyncio
-    async def test_route_to_plugins_mission_request(self):
-        """Test routing mission request to plugins"""
+    async def test_route_to_plugins_quest_request(self):
+        """Test routing quest request to plugins"""
         mock_intent = ConversationIntent(
             type=IntentType.MISSION_REQUEST,
             confidence=0.9,
             entities={"system": "authentication"},
-            requires_plugins=["github_integration"],
+            requires_plugins=["quest_tracker"],
             context_needed=[],
             complexity=ComplexityLevel.COMPLEX,
             estimated_response_time=15,
@@ -71,15 +71,15 @@ class TestMainApplication:
         with patch('main.message_bus') as mock_bus:
             mock_bus.request_response.return_value = {
                 "status": "success",
-                "content": "Mission created successfully"
+                "content": "Quest created successfully"
             }
             
             response = await route_to_plugins(mock_intent, message)
             
             assert response["status"] == "success"
             mock_bus.request_response.assert_called_once_with(
-                "github_integration",
-                "create_mission", 
+                "quest_tracker",
+                "create_quest", 
                 {"intent": mock_intent.dict(), "message": message}
             )
     
@@ -117,24 +117,24 @@ class TestIntentParsing:
             conversation_id="test_123",
             session_id="session_456",
             recent_turns=[],
-            active_missions=[],
-            available_plugins=["memory_manager", "github_integration", "config_manager"]
+            active_quests=[],
+            available_plugins=["tome_keeper", "quest_tracker", "config_manager"]
         )
     
     def test_conversation_intent_creation(self):
         """Test ConversationIntent model creation"""
         intent = ConversationIntent(
-            type="mission_request",
+            type="quest_request",
             confidence=0.85,
             entities={"technology": "OAuth2", "component": "authentication"},
-            requires_plugins=["github_integration"],
+            requires_plugins=["quest_tracker"],
             complexity="complex"
         )
         
-        assert intent.type == "mission_request"
+        assert intent.type == "quest_request"
         assert intent.confidence == 0.85
         assert intent.entities["technology"] == "OAuth2"
-        assert "github_integration" in intent.requires_plugins
+        assert "quest_tracker" in intent.requires_plugins
         assert intent.complexity == "complex"
     
     def test_conversation_context_creation(self, sample_context):
@@ -142,29 +142,29 @@ class TestIntentParsing:
         assert sample_context.conversation_id == "test_123"
         assert sample_context.session_id == "session_456"
         assert isinstance(sample_context.recent_turns, list)
-        assert isinstance(sample_context.active_missions, list)
+        assert isinstance(sample_context.active_quests, list)
         assert len(sample_context.available_plugins) == 3
     
     # This would be implemented by Claude Code
     @pytest.mark.asyncio
-    async def test_intent_parsing_mission_request(self, sample_context):
-        """Test parsing mission request intent"""
+    async def test_intent_parsing_quest_request(self, sample_context):
+        """Test parsing quest request intent"""
         # Mock the intent parser since it's not implemented yet
         mock_parser = AsyncMock()
         mock_parser.parse_intent.return_value = ConversationIntent(
-            type="mission_request",
+            type="quest_request",
             confidence=0.9,
             entities={"system": "authentication", "method": "OAuth2"},
-            requires_plugins=["github_integration"],
+            requires_plugins=["quest_tracker"],
             complexity="complex"
         )
         
         user_input = "Create a new authentication system with OAuth2"
         intent = await mock_parser.parse_intent(user_input, sample_context)
         
-        assert intent.type == "mission_request"
+        assert intent.type == "quest_request"
         assert intent.confidence > 0.8
-        assert "github_integration" in intent.requires_plugins
+        assert "quest_tracker" in intent.requires_plugins
         assert intent.complexity == "complex"
 
 class TestMessageBus:
@@ -226,7 +226,7 @@ class TestMemoryIntegration:
         """Create conversation memory instance"""
         memory = ConversationMemory()
         # Mock the underlying memory manager
-        memory.memory_manager = AsyncMock()
+        memory.tome_keeper = AsyncMock()
         return memory
     
     @pytest.mark.asyncio
@@ -234,7 +234,7 @@ class TestMemoryIntegration:
         """Test storing conversation turn"""
         conversation_id = "test_conversation"
         turn_data = {
-            "user_input": "Hello Riker",
+            "user_input": "Hello SIDHE",
             "intent": {"type": "greeting", "confidence": 0.95}
         }
         
@@ -242,7 +242,7 @@ class TestMemoryIntegration:
         
         assert result is True
         # Verify the memory manager was called
-        conversation_memory.memory_manager.store_list_item.assert_called_once()
+        conversation_memory.tome_keeper.store_list_item.assert_called_once()
     
     @pytest.mark.asyncio
     async def test_retrieve_conversation_history(self, conversation_memory):
@@ -250,7 +250,7 @@ class TestMemoryIntegration:
         conversation_id = "test_conversation"
         
         # Mock return data
-        conversation_memory.memory_manager.retrieve_list.return_value = [
+        conversation_memory.tome_keeper.retrieve_list.return_value = [
             {"user_input": "Hello", "timestamp": "2025-01-01T00:00:00Z"},
             {"user_input": "How are you?", "timestamp": "2025-01-01T00:01:00Z"}
         ]
@@ -259,15 +259,15 @@ class TestMemoryIntegration:
         
         assert len(history) == 2
         assert history[0]["user_input"] == "Hello"
-        conversation_memory.memory_manager.retrieve_list.assert_called_once()
+        conversation_memory.tome_keeper.retrieve_list.assert_called_once()
     
     @pytest.mark.asyncio
     async def test_health_check(self, conversation_memory):
         """Test conversation memory health check"""
         # Mock successful health check
-        conversation_memory.memory_manager.store_structured = AsyncMock()
-        conversation_memory.memory_manager.retrieve_structured = AsyncMock()
-        conversation_memory.memory_manager.retrieve_structured.return_value = {
+        conversation_memory.tome_keeper.store_structured = AsyncMock()
+        conversation_memory.tome_keeper.retrieve_structured = AsyncMock()
+        conversation_memory.tome_keeper.retrieve_structured.return_value = {
             "timestamp": "2025-01-01T00:00:00Z"
         }
         
@@ -292,21 +292,21 @@ class TestPluginRegistry:
             await plugin_registry.discover_plugins()
             
             # Verify known plugins were registered
-            assert "memory_manager" in plugin_registry.plugins
-            assert "github_integration" in plugin_registry.plugins
+            assert "tome_keeper" in plugin_registry.plugins
+            assert "quest_tracker" in plugin_registry.plugins
             assert "config_manager" in plugin_registry.plugins
     
     def test_get_plugins_by_capability(self, plugin_registry):
         """Test getting plugins by capability"""
         # Mock plugin info
         plugin_registry.plugins = {
-            "memory_manager": MagicMock(capabilities=["memory_storage", "conversation_history"]),
-            "github_integration": MagicMock(capabilities=["mission_management", "pr_creation"]),
+            "tome_keeper": MagicMock(capabilities=["memory_storage", "conversation_history"]),
+            "quest_tracker": MagicMock(capabilities=["quest_management", "pr_creation"]),
             "config_manager": MagicMock(capabilities=["configuration", "settings_management"])
         }
         
         memory_plugins = plugin_registry.get_plugins_by_capability("memory_storage")
-        assert "memory_manager" in memory_plugins
+        assert "tome_keeper" in memory_plugins
         assert len(memory_plugins) == 1
         
         config_plugins = plugin_registry.get_plugins_by_capability("configuration")
@@ -317,20 +317,20 @@ class TestPluginRegistry:
         """Test health check for all plugins"""
         # Mock plugin instances
         plugin_registry.plugins = {
-            "memory_manager": MagicMock(health_status="healthy"),
-            "github_integration": MagicMock(health_status="healthy"),
+            "tome_keeper": MagicMock(health_status="healthy"),
+            "quest_tracker": MagicMock(health_status="healthy"),
             "config_manager": MagicMock(health_status="healthy")
         }
         plugin_registry.plugin_instances = {
-            "memory_manager": MagicMock(),
-            "github_integration": MagicMock(),
+            "tome_keeper": MagicMock(),
+            "quest_tracker": MagicMock(),
             "config_manager": MagicMock()
         }
         
         health_status = await plugin_registry.health_check_all()
         
-        assert health_status["memory_manager"] == "healthy"
-        assert health_status["github_integration"] == "healthy"
+        assert health_status["tome_keeper"] == "healthy"
+        assert health_status["quest_tracker"] == "healthy"
         assert health_status["config_manager"] == "healthy"
 
 class TestIntegrationWorkflow:
@@ -364,7 +364,7 @@ class TestIntegrationWorkflow:
         # Mock plugin response
         mock_message_bus.request_response.return_value = {
             "status": "success",
-            "data": {"system_status": "operational"}
+            "data": {"system_status": "enchanted"}
         }
         
         # Test message

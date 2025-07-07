@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Initialize FastAPI app
-app = FastAPI(title="Riker Conversation Engine - Simple", version="1.0.0")
+app = FastAPI(title="SIDHE Conversation Engine - Simple", version="1.0.0")
 
 # Configure CORS
 app.add_middleware(
@@ -88,7 +88,7 @@ async def websocket_endpoint(websocket: WebSocket):
     await manager.send_personal_message(
         json.dumps({
             "type": "connection_established",
-            "message": "Connected to Riker Conversation Engine",
+            "message": "Connected to SIDHE Conversation Engine",
             "timestamp": datetime.now().isoformat()
         }),
         websocket
@@ -124,7 +124,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 # Store in Redis if available
                 if redis_client:
                     try:
-                        key = f"riker:message:{conversation_id}:{datetime.now().timestamp()}"
+                        key = f"sidhe:message:{conversation_id}:{datetime.now().timestamp()}"
                         redis_client.setex(key, 3600, json.dumps({
                             "user_message": content,
                             "bot_response": response["content"],

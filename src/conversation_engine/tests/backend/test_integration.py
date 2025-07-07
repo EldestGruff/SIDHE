@@ -19,7 +19,7 @@ class TestConversationFlow:
     
     @pytest.mark.asyncio
     @pytest.mark.integration
-    async def test_complete_mission_request_flow(self):
+    async def test_complete_quest_request_flow(self):
         """Test complete flow from intent parsing to plugin execution"""
         # Mock all components
         mock_intent_parser = MagicMock()
@@ -28,11 +28,11 @@ class TestConversationFlow:
         mock_registry = MagicMock()
         
         # Set up intent parsing response
-        mission_intent = ConversationIntent(
+        quest_intent = ConversationIntent(
             type=IntentType.MISSION_REQUEST,
             confidence=0.9,
             entities={"system": "authentication", "technology": "OAuth2"},
-            requires_plugins=["github_integration"],
+            requires_plugins=["quest_tracker"],
             context_needed=[],
             complexity=ComplexityLevel.COMPLEX,
             estimated_response_time=20,
@@ -42,9 +42,9 @@ class TestConversationFlow:
         # Set up plugin response
         plugin_response = {
             "status": "success",
-            "content": "Authentication mission created successfully! I've created Away Mission #4 for implementing OAuth2 authentication.",
+            "content": "Authentication quest created successfully! I've created Quest #4 for implementing OAuth2 authentication.",
             "data": {
-                "mission_id": "4",
+                "quest_id": "4",
                 "title": "OAuth2 Authentication System",
                 "status": "open",
                 "assignee": "Claude"
@@ -63,18 +63,18 @@ class TestConversationFlow:
         
         # Mock the routing with the mocked message bus
         with patch('main.message_bus', mock_message_bus):
-            response = await route_to_plugins(mission_intent, test_message)
+            response = await route_to_plugins(quest_intent, test_message)
         
         # Verify response
         assert response["status"] == "success"
-        assert "Authentication mission created" in response["content"]
-        assert response["data"]["mission_id"] == "4"
+        assert "Authentication quest created" in response["content"]
+        assert response["data"]["quest_id"] == "4"
         
         # Verify plugin was called correctly
         mock_message_bus.request_response.assert_called_once_with(
-            "github_integration",
-            "create_mission",
-            {"intent": mission_intent.dict(), "message": test_message}
+            "quest_tracker",
+            "create_quest",
+            {"intent": quest_intent.dict(), "message": test_message}
         )
     
     @pytest.mark.asyncio
@@ -100,16 +100,16 @@ class TestConversationFlow:
         
         # Mock system health data
         mock_health_data = {
-            "status": "operational",
+            "status": "enchanted",
             "components": {
                 "websocket": "ready",
-                "message_bus": "operational", 
+                "message_bus": "enchanted", 
                 "plugins": {
-                    "memory_manager": "active",
-                    "github_integration": "active",
+                    "tome_keeper": "active",
+                    "quest_tracker": "active",
                     "config_manager": "active"
                 },
-                "memory": "operational"
+                "memory": "enchanted"
             }
         }
         
@@ -118,9 +118,9 @@ class TestConversationFlow:
         
         # Verify response structure
         assert response["type"] == "status_response"
-        assert "System Status: operational" in response["content"]
+        assert "System Status: enchanted" in response["content"]
         assert "Components:" in response["content"]
-        assert response["data"]["status"] == "operational"
+        assert response["data"]["status"] == "enchanted"
     
     @pytest.mark.asyncio
     @pytest.mark.integration
@@ -144,8 +144,8 @@ class TestConversationFlow:
         
         # Mock plugin registry
         mock_plugin_status = {
-            "memory_manager": "active",
-            "github_integration": "active",
+            "tome_keeper": "active",
+            "quest_tracker": "active",
             "config_manager": "active"
         }
         
@@ -207,8 +207,8 @@ class TestComponentIntegration:
                 MagicMock(text=json.dumps({
                     "type": "question",
                     "confidence": 0.9,
-                    "entities": {"context": "previous_mission"},
-                    "requires_plugins": ["memory_manager"],
+                    "entities": {"context": "previous_quest"},
+                    "requires_plugins": ["tome_keeper"],
                     "context_needed": ["conversation_history"],
                     "complexity": "simple",
                     "estimated_response_time": 8,
@@ -222,12 +222,12 @@ class TestComponentIntegration:
             
             # Parse intent that requires memory context
             intent = await parser.parse_intent(
-                "What was the result of that authentication mission?",
+                "What was the result of that authentication quest?",
                 "test_conv_with_history"
             )
             
             assert intent.type == IntentType.QUESTION
-            assert "memory_manager" in intent.requires_plugins
+            assert "tome_keeper" in intent.requires_plugins
             assert "conversation_history" in intent.context_needed
     
     @pytest.mark.asyncio
@@ -248,31 +248,31 @@ class TestComponentIntegration:
             # Test plugin communication
             test_payload = {
                 "action": "get_status",
-                "plugin_id": "memory_manager"
+                "plugin_id": "tome_keeper"
             }
             
             # Mock a successful response
             with patch.object(message_bus, 'request_response') as mock_request:
                 mock_request.return_value = {
                     "status": "success",
-                    "data": {"health": "operational"}
+                    "data": {"health": "enchanted"}
                 }
                 
                 response = await message_bus.request_response(
-                    "memory_manager",
+                    "tome_keeper",
                     "health_check", 
                     test_payload
                 )
                 
                 assert response["status"] == "success"
-                assert response["data"]["health"] == "operational"
+                assert response["data"]["health"] == "enchanted"
     
     @pytest.mark.asyncio
     @pytest.mark.integration
     async def test_memory_and_conversation_flow(self):
         """Test memory integration with conversation flow"""
         # Create conversation memory with mocked Memory Manager
-        with patch('memory_manager.plugin_interface.MemoryManager') as mock_manager:
+        with patch('tome_keeper.plugin_interface.MemoryManager') as mock_manager:
             mock_instance = MagicMock()
             mock_instance.store_memory.return_value = True
             mock_instance.get_memory.return_value = {
@@ -288,10 +288,10 @@ class TestComponentIntegration:
             turn_data = {
                 "user_input": "Create authentication system",
                 "intent": {
-                    "type": "mission_request",
+                    "type": "quest_request",
                     "confidence": 0.9
                 },
-                "system_response": "Mission created"
+                "system_response": "Quest created"
             }
             
             result = await memory.store_turn("test_conv", turn_data)
@@ -358,20 +358,20 @@ class TestPerformanceAndScaling:
         
         # Mock plugin instances with health checks
         mock_plugins = {
-            "memory_manager": MagicMock(),
-            "github_integration": MagicMock(),
+            "tome_keeper": MagicMock(),
+            "quest_tracker": MagicMock(),
             "config_manager": MagicMock()
         }
         
         # Set up health check responses
-        mock_plugins["memory_manager"].health_check.return_value = "operational"
-        mock_plugins["github_integration"].health_check.return_value = "degraded"
-        mock_plugins["config_manager"].health_check.return_value = "operational"
+        mock_plugins["tome_keeper"].health_check.return_value = "enchanted"
+        mock_plugins["quest_tracker"].health_check.return_value = "degraded"
+        mock_plugins["config_manager"].health_check.return_value = "enchanted"
         
         # Set up registry plugins
         registry.plugins = {
-            "memory_manager": {"instance": mock_plugins["memory_manager"]},
-            "github_integration": {"instance": mock_plugins["github_integration"]},
+            "tome_keeper": {"instance": mock_plugins["tome_keeper"]},
+            "quest_tracker": {"instance": mock_plugins["quest_tracker"]},
             "config_manager": {"instance": mock_plugins["config_manager"]}
         }
         
@@ -379,9 +379,9 @@ class TestPerformanceAndScaling:
         await registry._check_plugin_health()
         
         # Verify health status
-        assert registry.plugin_health["memory_manager"] == "operational"
-        assert registry.plugin_health["github_integration"] == "degraded"
-        assert registry.plugin_health["config_manager"] == "operational"
+        assert registry.plugin_health["tome_keeper"] == "enchanted"
+        assert registry.plugin_health["quest_tracker"] == "degraded"
+        assert registry.plugin_health["config_manager"] == "enchanted"
         
         # Test refresh
         await registry.refresh_health()

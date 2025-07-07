@@ -94,7 +94,7 @@ class RedisWorkflowStore:
             return False
         
         try:
-            workflow_key = f"riker:workflow:{workflow.name}:{workflow.version}"
+            workflow_key = f"sidhe:workflow:{workflow.name}:{workflow.version}"
             workflow_data = {
                 "workflow": workflow.to_dict(),
                 "created_at": datetime.utcnow().isoformat(),
@@ -106,7 +106,7 @@ class RedisWorkflowStore:
             self.redis_client.set(workflow_key, json.dumps(workflow_data))
             
             # Add to workflow index
-            self.redis_client.sadd("riker:workflows:index", workflow_key)
+            self.redis_client.sadd("sidhe:workflows:index", workflow_key)
             
             # Set expiration (30 days for workflow definitions)
             self.redis_client.expire(workflow_key, timedelta(days=30))
@@ -135,7 +135,7 @@ class RedisWorkflowStore:
         
         try:
             if version:
-                workflow_key = f"riker:workflow:{workflow_name}:{version}"
+                workflow_key = f"sidhe:workflow:{workflow_name}:{version}"
             else:
                 # Find latest version
                 workflow_key = self._find_latest_workflow_version(workflow_name)
@@ -164,7 +164,7 @@ class RedisWorkflowStore:
     def _find_latest_workflow_version(self, workflow_name: str) -> Optional[str]:
         """Find the latest version of a workflow"""
         try:
-            pattern = f"riker:workflow:{workflow_name}:*"
+            pattern = f"sidhe:workflow:{workflow_name}:*"
             keys = self.redis_client.keys(pattern)
             
             if not keys:
@@ -200,7 +200,7 @@ class RedisWorkflowStore:
             return []
         
         try:
-            workflow_keys = self.redis_client.smembers("riker:workflows:index")
+            workflow_keys = self.redis_client.smembers("sidhe:workflows:index")
             workflows = []
             
             for key in list(workflow_keys)[:limit]:
@@ -244,13 +244,13 @@ class RedisWorkflowStore:
             return False
         
         try:
-            workflow_key = f"riker:workflow:{workflow_name}:{version}"
+            workflow_key = f"sidhe:workflow:{workflow_name}:{version}"
             
             # Delete from Redis
             deleted = self.redis_client.delete(workflow_key)
             
             # Remove from index
-            self.redis_client.srem("riker:workflows:index", workflow_key)
+            self.redis_client.srem("sidhe:workflows:index", workflow_key)
             
             if deleted:
                 logger.info(f"Deleted workflow: {workflow_name} v{version}")
@@ -280,17 +280,17 @@ class RedisWorkflowStore:
             return False
         
         try:
-            execution_key = f"riker:execution:{execution.execution_id}"
+            execution_key = f"sidhe:execution:{execution.execution_id}"
             execution_data = execution.to_dict()
             
             # Save execution
             self.redis_client.set(execution_key, json.dumps(execution_data))
             
             # Add to execution index
-            self.redis_client.sadd("riker:executions:index", execution_key)
+            self.redis_client.sadd("sidhe:executions:index", execution_key)
             
             # Add to workflow-specific execution list
-            workflow_executions_key = f"riker:executions:{execution.workflow_name}"
+            workflow_executions_key = f"sidhe:executions:{execution.workflow_name}"
             self.redis_client.sadd(workflow_executions_key, execution_key)
             
             # Set expiration (7 days for execution records)
@@ -318,7 +318,7 @@ class RedisWorkflowStore:
             return None
         
         try:
-            execution_key = f"riker:execution:{execution_id}"
+            execution_key = f"sidhe:execution:{execution_id}"
             execution_data = self.redis_client.get(execution_key)
             
             if not execution_data:
@@ -365,9 +365,9 @@ class RedisWorkflowStore:
         
         try:
             if workflow_name:
-                execution_keys = self.redis_client.smembers(f"riker:executions:{workflow_name}")
+                execution_keys = self.redis_client.smembers(f"sidhe:executions:{workflow_name}")
             else:
-                execution_keys = self.redis_client.smembers("riker:executions:index")
+                execution_keys = self.redis_client.smembers("sidhe:executions:index")
             
             executions = []
             
@@ -414,7 +414,7 @@ class RedisWorkflowStore:
             return False
         
         try:
-            execution_key = f"riker:execution:{execution_id}"
+            execution_key = f"sidhe:execution:{execution_id}"
             execution_data = self.redis_client.get(execution_key)
             
             if not execution_data:
@@ -460,17 +460,17 @@ class RedisWorkflowStore:
             cleaned_executions = 0
             
             # Clean up workflow index
-            workflow_keys = self.redis_client.smembers("riker:workflows:index")
+            workflow_keys = self.redis_client.smembers("sidhe:workflows:index")
             for key in workflow_keys:
                 if not self.redis_client.exists(key):
-                    self.redis_client.srem("riker:workflows:index", key)
+                    self.redis_client.srem("sidhe:workflows:index", key)
                     cleaned_workflows += 1
             
             # Clean up execution index
-            execution_keys = self.redis_client.smembers("riker:executions:index")
+            execution_keys = self.redis_client.smembers("sidhe:executions:index")
             for key in execution_keys:
                 if not self.redis_client.exists(key):
-                    self.redis_client.srem("riker:executions:index", key)
+                    self.redis_client.srem("sidhe:executions:index", key)
                     cleaned_executions += 1
             
             logger.info(f"Cleaned up {cleaned_workflows} workflows, {cleaned_executions} executions")
@@ -493,14 +493,14 @@ class RedisWorkflowStore:
         
         try:
             stats = {
-                "total_workflows": self.redis_client.scard("riker:workflows:index"),
-                "total_executions": self.redis_client.scard("riker:executions:index"),
+                "total_workflows": self.redis_client.scard("sidhe:workflows:index"),
+                "total_executions": self.redis_client.scard("sidhe:executions:index"),
                 "redis_memory_usage": self.redis_client.info("memory").get("used_memory_human", "N/A"),
                 "redis_connected_clients": self.redis_client.info("clients").get("connected_clients", 0)
             }
             
             # Count workflows by status
-            workflow_keys = self.redis_client.smembers("riker:workflows:index")
+            workflow_keys = self.redis_client.smembers("sidhe:workflows:index")
             status_counts = {}
             
             for key in workflow_keys:

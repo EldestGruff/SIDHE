@@ -69,7 +69,7 @@ class NaturalLanguageParser:
         
         Example workflow types:
         - command: Shell commands (npm install, git clone, etc.)
-        - plugin_action: Call other Riker plugins
+        - plugin_action: Call other SIDHE plugins
         - template: Use pre-built workflow templates
         - conditional: Execute steps based on conditions"""
         

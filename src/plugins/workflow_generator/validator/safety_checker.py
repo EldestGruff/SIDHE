@@ -201,7 +201,7 @@ class SafetyChecker:
         
         # Check plugin actions
         if step.type == "plugin_action":
-            if step.plugin and step.plugin not in ['github_integration', 'memory_manager', 'conversation_engine']:
+            if step.plugin and step.plugin not in ['quest_tracker', 'tome_keeper', 'voice_of_wisdom']:
                 warnings.append(f"Step '{step_id}' uses external plugin: {step.plugin}")
         
         return violations, warnings

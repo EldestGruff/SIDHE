@@ -1,8 +1,8 @@
 #!/bin/bash
 # File: scripts/check-missions.sh
-# Description: Check for open Away Missions assigned to Riker
+# Description: Check for open Quests assigned to SIDHE
 
-echo "🚀 Riker Mission Status Check"
+echo "🚀 SIDHE Quest Status Check"
 echo "================================"
 echo "Stardate: $(date +%Y.%m.%d)"
 echo ""
@@ -17,11 +17,11 @@ fi
 # Check if repo is set
 if [ -z "$GITHUB_REPO" ]; then
     echo "⚠️  Warning: GITHUB_REPO not set"
-    echo "   Setting default: export GITHUB_REPO=EldestGruff/riker"
-    export GITHUB_REPO="EldestGruff/riker"
+    echo "   Setting default: export GITHUB_REPO=EldestGruff/sidhe"
+    export GITHUB_REPO="EldestGruff/sidhe"
 fi
 
-echo "📡 Scanning for Away Missions..."
+echo "📡 Scanning for Quests..."
 echo ""
 
 # Use Python GitHub integration to list missions
@@ -30,24 +30,24 @@ import os
 import sys
 sys.path.append('src')
 
-from plugins.github_integration.plugin_interface import GitHubManager
+from plugins.quest_tracker.plugin_interface import QuestTracker
 
 try:
-    manager = GitHubManager()
-    missions = manager.get_away_missions('open')
+    manager = QuestTracker()
+    missions = manager.get_away_quests('open')
     
     if not missions:
-        print('No open Away Missions found.')
+        print('No open Quests found.')
     else:
-        print(f'Found {len(missions)} open Away Mission(s):\n')
-        for mission in missions:
-            print(f\"Mission #{mission['number']}: {mission['title']}\")
-            print(f\"  Priority: {mission.get('classification', 'Standard')}\")
-            print(f\"  Status: {mission.get('state', 'Unknown')}\")
+        print(f'Found {len(missions)} open Quest(s):\n')
+        for quest in missions:
+            print(f\"Quest #{quest['number']}: {quest['title']}\")
+            print(f\"  Priority: {quest.get('classification', 'Standard')}\")
+            print(f\"  Status: {quest.get('state', 'Unknown')}\")
             print()
         
-        print('\nTo implement a mission, run:')
-        print('  ./scripts/implement-mission.sh <mission-number>')
+        print('\nTo implement a quest, run:')
+        print('  ./scripts/implement-quest.sh <quest-number>')
         
 except Exception as e:
     print(f'Error accessing GitHub: {e}')
@@ -55,4 +55,4 @@ except Exception as e:
 "
 
 echo ""
-echo "🖖 Number One standing by for orders."
+echo "🖖 Apprentice standing by for orders."

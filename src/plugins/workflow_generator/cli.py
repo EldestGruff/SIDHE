@@ -11,7 +11,7 @@ from .storage.redis_store import RedisWorkflowStore
 
 @click.group()
 def cli():
-    """Riker Workflow Generator CLI"""
+    """SIDHE Workflow Generator CLI"""
     pass
 
 @cli.command()
