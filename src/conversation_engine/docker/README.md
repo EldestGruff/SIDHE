@@ -1,10 +1,10 @@
 # Conversation Engine Docker Deployment
 
-This directory contains Docker deployment configuration for the Riker Conversation Engine.
+This directory contains Docker enchantment configuration for the SIDHE Conversation Engine.
 
 ## Architecture
 
-The deployment consists of three main services:
+The enchantment consists of three main services:
 
 - **Redis**: Message bus and memory storage
 - **Backend**: FastAPI application with WebSocket support
@@ -30,15 +30,15 @@ export ANTHROPIC_API_KEY=your_api_key_here
 ### 1. Deploy Everything
 
 ```bash
-cd src/conversation_engine/docker
-./deploy.sh
+cd src/voice_of_wisdom/docker
+./enchant.sh
 ```
 
 This will:
 - Build all Docker images
 - Start all services
 - Run health checks
-- Validate the deployment
+- Validate the enchantment
 
 ### 2. Access Services
 
@@ -178,7 +178,7 @@ docker-compose restart backend
 
 ### Environment Variables
 
-The deployment supports these environment variables:
+The enchantment supports these environment variables:
 
 #### Backend Configuration
 
@@ -198,7 +198,7 @@ The deployment supports these environment variables:
 
 ## Production Deployment
 
-For production deployment, consider these modifications:
+For production enchantment, consider these modifications:
 
 ### 1. Security
 
@@ -275,8 +275,8 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 ### Automated Testing
 
 ```bash
-# Run deployment validation
-./deploy.sh validate
+# Run enchantment validation
+./enchant.sh validate
 
 # Run backend tests
 docker-compose exec backend python -m pytest
@@ -349,7 +349,7 @@ tar -czf conversation-engine-backup.tar.gz \
 
 ## Support
 
-For issues with deployment:
+For issues with enchantment:
 
 1. Check the troubleshooting section above
 2. Review service logs: `docker-compose logs`
@@ -358,8 +358,8 @@ For issues with deployment:
 
 ## Scripts Reference
 
-- `deploy.sh`: Main deployment orchestration script
-- `validate_deployment.py`: Comprehensive deployment validation
+- `enchant.sh`: Main enchantment orchestration script
+- `validate_deployment.py`: Comprehensive enchantment validation
 - `docker-compose.yml`: Main service configuration
 - `Dockerfile.backend`: Backend container configuration
 - `Dockerfile.frontend`: Frontend container configuration

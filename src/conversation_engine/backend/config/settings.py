@@ -69,7 +69,7 @@ def load_from_config_manager():
         
     try:
         # Load conversation engine specific config if it exists
-        config = config_manager.load_config("conversation_engine")
+        config = config_manager.load_config("voice_of_wisdom")
         
         # Override settings with values from config file
         for key, value in config.items():

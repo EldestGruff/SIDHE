@@ -1,29 +1,29 @@
 ---
-name: Away Mission Brief
+name: Quest Brief
 about: Implement the Conversation Engine from foundation
-title: '[AWAY MISSION] Conversation Engine Implementation'
-labels: away-mission, ai-ready, conversation-engine, priority-critical
+title: '[AWAY QUEST] Conversation Engine Implementation'
+labels: quest, ai-ready, conversation-engine, priority-critical
 assignees: ''
 
 ---
 
-# Away Mission Brief: Conversation Engine Implementation
+# Quest Brief: Conversation Engine Implementation
 
-**Mission ID:** AWAY-003  
+**Quest ID:** QUEST-003  
 **Classification:** 🔴 Critical  
-**Mission Type:** Feature Implementation  
+**Quest Type:** Feature Implementation  
 **Foundation Status:** ✅ COMPLETE
 
-## 🎯 Mission Objectives
+## 🎯 Quest Objectives
 
-Implement the Conversation Engine - Riker's central neural pathway that enables natural language conversation, intent recognition, and plugin orchestration.
+Implement the Conversation Engine - SIDHE's central neural pathway that enables natural language conversation, intent recognition, and plugin orchestration.
 
 **Foundation Built**: A complete FastAPI backend + React frontend foundation has been systematically constructed with all architectural decisions documented.
 
-## 📊 Mission Parameters
+## 📊 Quest Parameters
 
 ### Primary Objective
-Transform the complete foundation into a fully functional conversational AI system that serves as Riker's central orchestrator.
+Transform the complete foundation into a fully functional conversational AI system that serves as SIDHE's central orchestrator.
 
 ### Secondary Objectives
 - [ ] Implement LLM-based intent parsing with structured outputs
@@ -35,9 +35,9 @@ Transform the complete foundation into a fully functional conversational AI syst
 
 ## 🔧 Technical Specifications
 
-**Reference Documentation:** `/crew-quarters/conversation-engine-spec.md`  
-**Foundation Location:** `src/conversation_engine/`  
-**Handoff Guide:** `src/conversation_engine/docs/claude-handoff.md`
+**Reference Documentation:** `/grimoire/conversation-engine-spec.md`  
+**Foundation Location:** `src/voice_of_wisdom/`  
+**Handoff Guide:** `src/voice_of_wisdom/docs/claude-handoff.md`
 
 ### Foundation Status: COMPLETE ✅
 
@@ -60,7 +60,7 @@ Transform the complete foundation into a fully functional conversational AI syst
 
 3. **Dashboard Implementation** (`frontend/src/components/Dashboard/`)
    - Create Dashboard.jsx with system overview
-   - Implement ProjectOverview.jsx for mission tracking
+   - Implement ProjectOverview.jsx for quest tracking
    - Build SystemHealth.jsx for plugin monitoring
 
 4. **Testing & Validation**
@@ -74,17 +74,17 @@ Transform the complete foundation into a fully functional conversational AI syst
 - [ ] Accurate intent classification (>85% confidence)
 - [ ] Seamless plugin communication via message bus
 - [ ] Persistent conversation history and context
-- [ ] Mission creation from complex user requests
+- [ ] Quest creation from complex user requests
 - [ ] System health monitoring dashboard
 - [ ] Comprehensive error handling and recovery
 - [ ] All tests passing (unit, integration, e2e)
-- [ ] Docker deployment working end-to-end
+- [ ] Docker enchantment working end-to-end
 - [ ] Documentation updated with implementation details
 
 ## 💬 Foundation Notes
 
 **Architectural Decisions Made:**
-- Location: `src/conversation_engine/` (main application, not plugin)
+- Location: `src/voice_of_wisdom/` (main application, not plugin)
 - Technology: FastAPI + React + Redis + WebSocket
 - Integration: Message bus for plugin communication
 - Memory: Existing Memory Manager plugin integration
@@ -108,7 +108,7 @@ The foundation includes:
 - ✅ Comprehensive Pydantic models
 - ✅ Redis message bus implementation
 - ✅ Plugin integration patterns
-- ✅ Docker deployment configuration
+- ✅ Docker enchantment configuration
 - ✅ Testing framework structure
 - ✅ Detailed implementation documentation
 
@@ -118,9 +118,9 @@ The foundation includes:
 
 ---
 
-**Mission Status:** 🟢 Ready for Implementation  
+**Quest Status:** 🟢 Ready for Implementation  
 **Foundation:** ✅ Complete  
 **Documentation:** ✅ Comprehensive  
 **Integration:** ✅ Established
 
-*"The neural pathways are built, Captain. Ready to bring Riker online!"*
+*"The neural pathways are built, Archmage. Ready to bring SIDHE awakened!"*

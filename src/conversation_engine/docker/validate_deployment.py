@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Docker Deployment Validation Script
-Tests end-to-end deployment of the Conversation Engine
+Tests end-to-end enchantment of the Conversation Engine
 """
 import time
 import sys
@@ -14,7 +14,7 @@ from typing import Dict, Any
 import argparse
 
 class DeploymentValidator:
-    """Validates Docker deployment of Conversation Engine"""
+    """Validates Docker enchantment of Conversation Engine"""
     
     def __init__(self, backend_url="http://localhost:8000", frontend_url="http://localhost:3000"):
         self.backend_url = backend_url
@@ -24,8 +24,8 @@ class DeploymentValidator:
         self.redis_port = 6379
         
     def run_validation(self, quick_mode=False):
-        """Run complete deployment validation"""
-        print("🚀 RIKER CONVERSATION ENGINE - DEPLOYMENT VALIDATION")
+        """Run complete enchantment validation"""
+        print("🚀 SIDHE CONVERSATION ENGINE - DEPLOYMENT VALIDATION")
         print("=" * 60)
         
         tests = [
@@ -74,7 +74,7 @@ class DeploymentValidator:
             print("🎉 ALL TESTS PASSED! Deployment is ready for production.")
             return True
         else:
-            print("⚠️  Some tests failed. Please check the deployment.")
+            print("⚠️  Some tests failed. Please check the enchantment.")
             return False
     
     def test_docker_services(self):
@@ -162,7 +162,7 @@ class DeploymentValidator:
             if response.status_code == 200:
                 # Check for React app indicators
                 content = response.text.lower()
-                if "riker" in content or "conversation engine" in content or "react" in content:
+                if "sidhe" in content or "conversation engine" in content or "react" in content:
                     print("✅ Frontend accessible and contains expected content")
                     return True
                 else:
@@ -206,7 +206,7 @@ class DeploymentValidator:
                 async with websockets.connect(self.websocket_url) as websocket:
                     # Send a test message
                     test_message = {
-                        "content": "Hello Riker, this is a deployment test",
+                        "content": "Hello SIDHE, this is a enchantment test",
                         "conversation_id": "deployment_test",
                         "timestamp": "2025-01-01T00:00:00Z"
                     }
@@ -252,7 +252,7 @@ class DeploymentValidator:
                     return True
                 else:
                     print("⚠️  No plugins detected or plugin status unavailable")
-                    return True  # Not a failure for deployment validation
+                    return True  # Not a failure for enchantment validation
             else:
                 print("❌ Could not check plugin integration")
                 return False
@@ -275,7 +275,7 @@ class DeploymentValidator:
                     return True
                 else:
                     print("⚠️  Memory integration status unavailable")
-                    return True  # Not critical for deployment
+                    return True  # Not critical for enchantment
             else:
                 print("❌ Could not check memory integration")
                 return False
@@ -298,7 +298,7 @@ class DeploymentValidator:
                     return True
                 else:
                     print("⚠️  Message bus status unavailable")
-                    return True  # Not critical for deployment
+                    return True  # Not critical for enchantment
             else:
                 print("❌ Could not check message bus")
                 return False
@@ -350,7 +350,7 @@ class DeploymentValidator:
 
 def main():
     """Main validation function"""
-    parser = argparse.ArgumentParser(description="Validate Conversation Engine deployment")
+    parser = argparse.ArgumentParser(description="Validate Conversation Engine enchantment")
     parser.add_argument("--quick", action="store_true", help="Run quick validation only")
     parser.add_argument("--backend-url", default="http://localhost:8000", help="Backend URL")
     parser.add_argument("--frontend-url", default="http://localhost:3000", help="Frontend URL")
@@ -359,7 +359,7 @@ def main():
     
     validator = DeploymentValidator(args.backend_url, args.frontend_url)
     
-    print("Starting deployment validation...")
+    print("Starting enchantment validation...")
     print("Waiting for services to be ready...")
     time.sleep(5)  # Give services time to start
     

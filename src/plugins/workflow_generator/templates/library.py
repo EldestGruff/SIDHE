@@ -142,13 +142,13 @@ class TemplateLibrary:
         
         # React App Deployment Template
         react_template = WorkflowTemplate(
-            name="react-app-deploy",
-            description="Build and deploy React application",
-            keywords=["react", "deploy", "build", "npm", "test", "frontend"],
+            name="react-app-enchant",
+            description="Build and enchant React application",
+            keywords=["react", "enchant", "build", "npm", "test", "frontend"],
             workflow_dict={
-                "name": "react-app-deploy",
+                "name": "react-app-enchant",
                 "version": "1.0",
-                "description": "Build and deploy React application",
+                "description": "Build and enchant React application",
                 "inputs": [
                     {"name": "app_path", "type": "string", "required": True},
                     {"name": "environment", "type": "string", "required": True, "validation": {"values": ["development", "staging", "production"]}}
@@ -226,13 +226,13 @@ class TemplateLibrary:
         
         # Docker Build Template
         docker_template = WorkflowTemplate(
-            name="docker-build-deploy",
-            description="Build and deploy Docker container",
-            keywords=["docker", "build", "deploy", "container", "image"],
+            name="docker-build-enchant",
+            description="Build and enchant Docker container",
+            keywords=["docker", "build", "enchant", "container", "image"],
             workflow_dict={
-                "name": "docker-build-deploy",
+                "name": "docker-build-enchant",
                 "version": "1.0",
-                "description": "Build and deploy Docker container",
+                "description": "Build and enchant Docker container",
                 "inputs": [
                     {"name": "image_name", "type": "string", "required": True},
                     {"name": "tag", "type": "string", "default": "latest"},
@@ -266,9 +266,9 @@ class TemplateLibrary:
         
         # Add templates to library
         self.templates["python-project-setup"] = python_template
-        self.templates["react-app-deploy"] = react_template
+        self.templates["react-app-enchant"] = react_template
         self.templates["git-workflow"] = git_template
-        self.templates["docker-build-deploy"] = docker_template
+        self.templates["docker-build-enchant"] = docker_template
         
         logger.info(f"Loaded {len(self.templates)} built-in templates")
     

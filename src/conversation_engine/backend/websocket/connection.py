@@ -43,7 +43,7 @@ class ConnectionManager:
         await self.send_personal_message({
             "type": "connection_established",
             "client_id": client_id,
-            "message": "Welcome to Riker! Ready to engage."
+            "message": "Welcome to SIDHE! Ready to engage."
         }, websocket)
         
         return client_id

@@ -13,7 +13,7 @@ from enum import Enum
 class IntentType(str, Enum):
     """Enumeration of supported intent types"""
     QUESTION = "question"
-    MISSION_REQUEST = "mission_request"
+    MISSION_REQUEST = "quest_request"
     STATUS_CHECK = "status_check"
     COMMAND = "command"
     DISCUSSION = "discussion"
@@ -60,7 +60,7 @@ class ConversationContext(BaseModel):
     
     # Project context
     current_project: Optional[str] = Field(None, description="Current project context")
-    active_missions: List[str] = Field(default_factory=list, description="List of active Away Mission IDs")
+    active_quests: List[str] = Field(default_factory=list, description="List of active Quest IDs")
     
     # System state
     available_plugins: List[str] = Field(default_factory=list, description="List of available plugins")

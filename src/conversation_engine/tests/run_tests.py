@@ -143,7 +143,7 @@ def main():
         return 1
     
     print("=" * 60)
-    print("🚀 RIKER CONVERSATION ENGINE TEST SUITE")
+    print("🚀 SIDHE CONVERSATION ENGINE TEST SUITE")
     print("=" * 60)
     print(f"Test Type: {args.type}")
     print(f"Coverage: {'Enabled' if args.coverage else 'Disabled'}")

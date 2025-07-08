@@ -1,13 +1,13 @@
 #!/bin/bash
 # Session Protocol Deployment Script
-# Deploys and tests the Riker Session Protocol System
+# Deploys and tests the SIDHE Session Protocol System
 
 echo "🚀 [Session Protocol] Deployment Starting..."
 echo "=================================================="
 
-# Check if we're in a Riker project directory
-if [[ ! -f "PRIME_DIRECTIVE.md" ]]; then
-    echo "⚠️  Warning: PRIME_DIRECTIVE.md not found. Are you in the Riker project root?"
+# Check if we're in a SIDHE project directory
+if [[ ! -f "THE_OLD_LAWS.md" ]]; then
+    echo "⚠️  Warning: THE_OLD_LAWS.md not found. Are you in the SIDHE project root?"
     read -p "Continue anyway? (y/N): " -n 1 -r
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -36,9 +36,9 @@ echo "📝 Creating session_protocol.py..."
 cat > scripts/session_protocol.py << 'EOF'
 #!/usr/bin/env python3
 """
-Riker Session Protocol System
+SIDHE Session Protocol System
 
-This module ensures every conversation follows proper Riker development processes,
+This module ensures every conversation follows proper SIDHE development processes,
 maintaining consistency across AI instances and conversations.
 
 Usage:
@@ -49,7 +49,7 @@ Usage:
     session.initialize()
     
     # During conversation
-    session.update_mission_status("AWAY-003", "active")
+    session.update_quest_status("QUEST-003", "active")
     
     # End of conversation  
     session.complete(summary="Implemented Config Manager plugin")
@@ -66,7 +66,7 @@ from enum import Enum
 
 
 class MissionStatus(Enum):
-    """Away Mission status states"""
+    """Quest status states"""
     PROPOSED = "proposed"
     ACTIVE = "active" 
     COMPLETE = "complete"
@@ -76,11 +76,11 @@ class MissionStatus(Enum):
 
 @dataclass
 class ProjectState:
-    """Current state of the Riker project"""
-    active_missions: List[str]
-    completed_missions: List[str]
-    blocked_missions: List[str]
-    conversation_engine_status: str
+    """Current state of the SIDHE project"""
+    active_quests: List[str]
+    completed_quests: List[str]
+    blocked_quests: List[str]
+    voice_of_wisdom_status: str
     plugin_status: Dict[str, str]
     last_update: str
     current_focus: Optional[str] = None
@@ -102,13 +102,13 @@ class SessionSummary:
 
 class RikerSession:
     """
-    Manages Riker development session protocols
+    Manages SIDHE development session protocols
     
     Ensures consistent processes across conversations:
     - Project state loading and tracking
-    - Captain's log maintenance  
-    - Bridge document updates
-    - Away mission lifecycle management
+    - Archmage's log maintenance  
+    - Sanctum document updates
+    - Away quest lifecycle management
     - Documentation consistency
     """
     
@@ -124,11 +124,11 @@ class RikerSession:
         
         # Key project files
         self.bridge_file = self.project_root / "BRIDGE.md"
-        self.captains_log_dir = self.project_root / "captains-log"
-        self.crew_quarters_dir = self.project_root / "crew-quarters"
-        self.adr_file = self.project_root / "crew-quarters" / "architectural-decision-record.md"
-        self.away_missions_dir = self.project_root / "away-missions"
-        self.state_file = self.project_root / ".riker-state.json"
+        self.captains_log_dir = self.project_root / "chronicle"
+        self.crew_quarters_dir = self.project_root / "grimoire"
+        self.adr_file = self.project_root / "grimoire" / "architectural-decision-record.md"
+        self.away_quests_dir = self.project_root / "quests"
+        self.state_file = self.project_root / ".sidhe-state.json"
         
     def initialize(self) -> Dict[str, Any]:
         """
@@ -137,7 +137,7 @@ class RikerSession:
         Returns:
             Dict containing current project context for the conversation
         """
-        print(f"🚀 [Riker Session Protocol] Initializing session {self.session_id}")
+        print(f"🚀 [SIDHE Session Protocol] Initializing session {self.session_id}")
         
         # Create required directories
         self._ensure_directory_structure()
@@ -145,11 +145,11 @@ class RikerSession:
         # Load current project state
         project_state = self._load_project_state()
         
-        # Load recent captain's log entries
+        # Load recent archmage's log entries
         recent_log_entries = self._load_recent_log_entries(limit=3)
         
-        # Load active away missions
-        active_missions = self._load_active_missions()
+        # Load active quests
+        active_quests = self._load_active_quests()
         
         # Load current ADR decisions
         recent_decisions = self._load_recent_adr_entries(limit=5)
@@ -159,13 +159,13 @@ class RikerSession:
             "session_id": self.session_id,
             "project_state": asdict(project_state),
             "recent_log_entries": recent_log_entries,
-            "active_missions": active_missions,
+            "active_quests": active_quests,
             "recent_decisions": recent_decisions,
             "bridge_status": self._load_bridge_status(),
             "initialization_time": self.start_time
         }
         
-        print(f"✅ Session initialized - {len(active_missions)} active missions loaded")
+        print(f"✅ Session initialized - {len(active_quests)} active missions loaded")
         return context
     
     def _ensure_directory_structure(self):
@@ -173,24 +173,24 @@ class RikerSession:
         directories = [
             self.captains_log_dir,
             self.crew_quarters_dir,
-            self.away_missions_dir / "proposed",
-            self.away_missions_dir / "active",
-            self.away_missions_dir / "completed",
-            self.away_missions_dir / "blocked",
-            self.away_missions_dir / "cancelled"
+            self.away_quests_dir / "proposed",
+            self.away_quests_dir / "active",
+            self.away_quests_dir / "completed",
+            self.away_quests_dir / "blocked",
+            self.away_quests_dir / "cancelled"
         ]
         
         for directory in directories:
             directory.mkdir(parents=True, exist_ok=True)
     
-    def update_mission_status(self, mission_id: str, new_status: MissionStatus, 
+    def update_quest_status(self, quest_id: str, new_status: MissionStatus, 
                             notes: Optional[str] = None) -> bool:
         """
-        Update away mission status and move files accordingly
+        Update quest status and move files accordingly
         
         Args:
-            mission_id: Mission identifier (e.g., "AWAY-003")
-            new_status: New mission status
+            quest_id: Quest identifier (e.g., "QUEST-003")
+            new_status: New quest status
             notes: Optional notes about the status change
             
         Returns:
@@ -199,30 +199,30 @@ class RikerSession:
         try:
             # Track the update
             self.missions_updated.append({
-                "mission_id": mission_id,
+                "quest_id": quest_id,
                 "new_status": new_status.value,
                 "notes": notes or "",
                 "timestamp": datetime.now(timezone.utc).isoformat()
             })
             
-            # Move mission files based on status
-            self._move_mission_files(mission_id, new_status)
+            # Move quest files based on status
+            self._move_quest_files(quest_id, new_status)
             
             # Update project state
-            self._update_project_state_for_mission(mission_id, new_status)
+            self._update_project_state_for_quest(quest_id, new_status)
             
-            print(f"📋 Updated {mission_id} status to {new_status.value}")
+            print(f"📋 Updated {quest_id} status to {new_status.value}")
             return True
             
         except Exception as e:
-            print(f"❌ Error updating mission {mission_id}: {e}")
+            print(f"❌ Error updating quest {quest_id}: {e}")
             return False
     
-    def add_accomplishment(self, description: str, mission_id: Optional[str] = None):
+    def add_accomplishment(self, description: str, quest_id: Optional[str] = None):
         """Record an accomplishment for this session"""
         accomplishment = {
             "description": description,
-            "mission_id": mission_id,
+            "quest_id": quest_id,
             "timestamp": datetime.now(timezone.utc).isoformat()
         }
         self.accomplishments.append(accomplishment)
@@ -249,14 +249,14 @@ class RikerSession:
         Returns:
             SessionSummary object with complete session data
         """
-        print(f"🏁 [Riker Session Protocol] Completing session {self.session_id}")
+        print(f"🏁 [SIDHE Session Protocol] Completing session {self.session_id}")
         
         # Create session summary
         session_summary = SessionSummary(
             session_id=self.session_id,
             start_time=self.start_time,
             end_time=datetime.now(timezone.utc).isoformat(),
-            participants=self.participants or ["Captain Andy", "Chief Engineer Ivy"],
+            participants=self.participants or ["Archmage Andy", "Chief Engineer Ivy"],
             focus_area=summary,
             accomplishments=[acc["description"] for acc in self.accomplishments],
             decisions_made=[dec["decision"] for dec in self.decisions_made],
@@ -264,10 +264,10 @@ class RikerSession:
             missions_updated=self.missions_updated
         )
         
-        # Update captain's log
+        # Update archmage's log
         self._update_captains_log(session_summary)
         
-        # Update bridge document
+        # Update sanctum document
         self._update_bridge_document(session_summary)
         
         # Update project state
@@ -292,38 +292,38 @@ class RikerSession:
         
         # Return default state
         return ProjectState(
-            active_missions=[],
-            completed_missions=[],
-            blocked_missions=[],
-            conversation_engine_status="foundation_complete",
+            active_quests=[],
+            completed_quests=[],
+            blocked_quests=[],
+            voice_of_wisdom_status="foundation_complete",
             plugin_status={
-                "memory_manager": "complete",
-                "github_integration": "complete", 
+                "tome_keeper": "complete",
+                "quest_tracker": "complete", 
                 "config_manager": "complete"
             },
             last_update=datetime.now(timezone.utc).isoformat()
         )
     
-    def _load_active_missions(self) -> List[Dict[str, Any]]:
-        """Load currently active away missions"""
+    def _load_active_quests(self) -> List[Dict[str, Any]]:
+        """Load currently active quests"""
         missions = []
         
-        # Check all mission directories
+        # Check all quest directories
         status_dirs = ["proposed", "active", "completed", "blocked", "cancelled"]
         for status in status_dirs:
-            status_dir = self.away_missions_dir / status
+            status_dir = self.away_quests_dir / status
             if status_dir.exists():
-                for mission_file in status_dir.glob("*.md"):
+                for quest_file in status_dir.glob("*.md"):
                     missions.append({
-                        "id": mission_file.stem,
+                        "id": quest_file.stem,
                         "status": status,
-                        "file": str(mission_file)
+                        "file": str(quest_file)
                     })
         
         return missions
     
     def _load_recent_log_entries(self, limit: int = 3) -> List[Dict[str, Any]]:
-        """Load recent captain's log entries"""
+        """Load recent archmage's log entries"""
         entries = []
         
         if not self.captains_log_dir.exists():
@@ -366,7 +366,7 @@ class RikerSession:
         return decisions
     
     def _load_bridge_status(self) -> Dict[str, Any]:
-        """Load current bridge status"""
+        """Load current sanctum status"""
         try:
             if self.bridge_file.exists():
                 with open(self.bridge_file, 'r') as f:
@@ -379,12 +379,12 @@ class RikerSession:
                     "preview": content[:300] + "..." if len(content) > 300 else content
                 }
         except Exception as e:
-            print(f"⚠️ Could not load bridge status: {e}")
+            print(f"⚠️ Could not load sanctum status: {e}")
         
         return {"exists": False}
     
-    def _move_mission_files(self, mission_id: str, new_status: MissionStatus):
-        """Move mission files to appropriate directory based on status"""
+    def _move_quest_files(self, quest_id: str, new_status: MissionStatus):
+        """Move quest files to appropriate directory based on status"""
         # Define directory mapping
         status_dirs = {
             MissionStatus.PROPOSED: "proposed",
@@ -394,27 +394,27 @@ class RikerSession:
             MissionStatus.CANCELLED: "cancelled"
         }
         
-        target_dir = self.away_missions_dir / status_dirs[new_status]
+        target_dir = self.away_quests_dir / status_dirs[new_status]
         target_dir.mkdir(parents=True, exist_ok=True)
         
-        # Find current mission file
+        # Find current quest file
         for status_dir in status_dirs.values():
-            current_dir = self.away_missions_dir / status_dir
-            mission_file = current_dir / f"{mission_id}.md"
+            current_dir = self.away_quests_dir / status_dir
+            quest_file = current_dir / f"{quest_id}.md"
             
-            if mission_file.exists():
-                target_file = target_dir / f"{mission_id}.md"
-                mission_file.rename(target_file)
-                print(f"📁 Moved {mission_id} to {status_dirs[new_status]}/")
+            if quest_file.exists():
+                target_file = target_dir / f"{quest_id}.md"
+                quest_file.rename(target_file)
+                print(f"📁 Moved {quest_id} to {status_dirs[new_status]}/")
                 break
     
-    def _update_project_state_for_mission(self, mission_id: str, new_status: MissionStatus):
-        """Update project state tracking for mission status change"""
+    def _update_project_state_for_quest(self, quest_id: str, new_status: MissionStatus):
+        """Update project state tracking for quest status change"""
         # This would update internal tracking - simplified for now
         pass
     
     def _update_captains_log(self, session_summary: SessionSummary):
-        """Update captain's log with session summary"""
+        """Update archmage's log with session summary"""
         # Get current date for log file
         log_date = datetime.now().strftime("%Y-%m-%d")
         log_file = self.captains_log_dir / f"stardate-{log_date}.md"
@@ -432,8 +432,8 @@ class RikerSession:
 ### Decisions Made
 {chr(10).join(f"- {dec}" for dec in session_summary.decisions_made)}
 
-### Away Missions Updated
-{chr(10).join(f"- {mission['mission_id']}: {mission['new_status']}" for mission in session_summary.missions_updated)}
+### Quests Updated
+{chr(10).join(f"- {quest['quest_id']}: {quest['new_status']}" for quest in session_summary.missions_updated)}
 
 ### Next Actions
 {chr(10).join(f"- {action}" for action in session_summary.next_actions)}
@@ -445,10 +445,10 @@ class RikerSession:
         with open(log_file, 'a') as f:
             f.write(log_entry)
         
-        print(f"📝 Updated captain's log: {log_file.name}")
+        print(f"📝 Updated archmage's log: {log_file.name}")
     
     def _update_bridge_document(self, session_summary: SessionSummary):
-        """Update bridge document with current status"""
+        """Update sanctum document with current status"""
         bridge_content = f"""# BRIDGE - Current Status
 
 **Last Updated:** {session_summary.end_time}
@@ -460,8 +460,8 @@ class RikerSession:
 ## 📊 Recent Accomplishments
 {chr(10).join(f"- {acc}" for acc in session_summary.accomplishments[-5:])}
 
-## 🚀 Active Away Missions
-{chr(10).join(f"- {mission['mission_id']}: {mission['new_status']}" for mission in session_summary.missions_updated if mission['new_status'] == 'active')}
+## 🚀 Active Quests
+{chr(10).join(f"- {quest['quest_id']}: {quest['new_status']}" for quest in session_summary.missions_updated if quest['new_status'] == 'active')}
 
 ## 🔄 Next Actions
 {chr(10).join(f"- {action}" for action in session_summary.next_actions)}
@@ -473,24 +473,24 @@ class RikerSession:
 - **Config Manager Plugin:** Complete ✅
 
 ---
-*Updated by Riker Session Protocol System*
+*Updated by SIDHE Session Protocol System*
 """
         
         with open(self.bridge_file, 'w') as f:
             f.write(bridge_content)
         
-        print(f"🌉 Updated bridge document")
+        print(f"🌉 Updated sanctum document")
     
     def _save_project_state(self, next_focus: Optional[str]):
         """Save current project state"""
         state = ProjectState(
-            active_missions=[m["mission_id"] for m in self.missions_updated if m["new_status"] == "active"],
-            completed_missions=[m["mission_id"] for m in self.missions_updated if m["new_status"] == "complete"],
-            blocked_missions=[m["mission_id"] for m in self.missions_updated if m["new_status"] == "blocked"],
-            conversation_engine_status="foundation_complete",
+            active_quests=[m["quest_id"] for m in self.missions_updated if m["new_status"] == "active"],
+            completed_quests=[m["quest_id"] for m in self.missions_updated if m["new_status"] == "complete"],
+            blocked_quests=[m["quest_id"] for m in self.missions_updated if m["new_status"] == "blocked"],
+            voice_of_wisdom_status="foundation_complete",
             plugin_status={
-                "memory_manager": "complete",
-                "github_integration": "complete",
+                "tome_keeper": "complete",
+                "quest_tracker": "complete",
                 "config_manager": "complete"
             },
             last_update=datetime.now(timezone.utc).isoformat(),
@@ -517,9 +517,9 @@ def create_session_template() -> str:
         Template string for copying into new AI conversations
     """
     return """
-# Riker Development Session - Initialization Protocol
+# SIDHE Development Session - Initialization Protocol
 
-I'm starting a new development session for Project Riker. Please run the session initialization protocol:
+I'm starting a new development session for Project SIDHE. Please run the session initialization protocol:
 
 ```python
 import sys
@@ -531,19 +531,19 @@ context = session.initialize()
 
 # Display current project context
 print("📋 Project Context Loaded:")
-print(f"- Active Missions: {len(context['active_missions'])}")
+print(f"- Active Missions: {len(context['active_quests'])}")
 print(f"- Recent Decisions: {len(context['recent_decisions'])}")
-print(f"- Bridge Status: {context['bridge_status']['exists']}")
+print(f"- Sanctum Status: {context['bridge_status']['exists']}")
 ```
 
 Based on the loaded context, please:
 1. Summarize the current project state
-2. List active away missions  
+2. List active quests  
 3. Identify the current focus area
 4. Suggest next steps
 
-Remember to follow Riker development protocols:
-- Update mission status as work progresses
+Remember to follow SIDHE development protocols:
+- Update quest status as work progresses
 - Record accomplishments and decisions
 - Complete session with proper documentation updates
 """
@@ -560,7 +560,7 @@ if __name__ == "__main__":
     # Example session workflow
     session.add_accomplishment("Updated architectural decision record with new features")
     session.add_decision("Prioritize LCARS theming after core functionality")
-    session.update_mission_status("AWAY-008", MissionStatus.ACTIVE, "Session Protocol System implementation")
+    session.update_quest_status("QUEST-008", MissionStatus.ACTIVE, "Session Protocol System implementation")
     
     # Complete session
     summary = session.complete(
@@ -579,8 +579,8 @@ chmod +x scripts/session_protocol.py
 
 echo "🔧 Made script executable"
 
-# Test the deployment by running a basic initialization
-echo "🧪 Testing deployment..."
+# Test the enchantment by running a basic initialization
+echo "🧪 Testing enchantment..."
 echo "Running basic initialization test..."
 
 cd "$(dirname "$0")" 2>/dev/null || true
@@ -620,19 +620,19 @@ echo "📋 Usage:"
 echo "  session = RikerSession()"
 echo "  context = session.initialize()"
 echo "  session.add_accomplishment('Deployed Session Protocol')"
-echo "  session.complete('Session Protocol deployment test')"
+echo "  session.complete('Session Protocol enchantment test')"
 EOF
 
-# Make the deployment script executable
+# Make the enchantment script executable
 chmod +x session_protocol_deploy.sh
 
-echo "📦 Session Protocol deployment script created!"
+echo "📦 Session Protocol enchantment script created!"
 echo ""
-echo "🚀 To deploy, run:"
+echo "🚀 To enchant, run:"
 echo "  ./session_protocol_deploy.sh"
 echo ""
 echo "This will:"
 echo "  1. Create the scripts directory"
 echo "  2. Deploy session_protocol.py"
-echo "  3. Test the deployment"
+echo "  3. Test the enchantment"
 echo "  4. Provide usage instructions"

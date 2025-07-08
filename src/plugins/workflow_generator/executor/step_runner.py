@@ -481,10 +481,10 @@ class StepRunner:
         """Register built-in plugins"""
         try:
             # Import and register plugins
-            from ...github_integration.plugin_interface import GitHubManager
-            self.plugin_registry["github"] = GitHubManager()
+            from ...quest_tracker.plugin_interface import QuestTracker
+            self.plugin_registry["github"] = QuestTracker()
             
-            from ...memory_manager.plugin_interface import MemoryManager
+            from ...tome_keeper.plugin_interface import MemoryManager
             self.plugin_registry["memory"] = MemoryManager()
             
             logger.info("Built-in plugins registered")

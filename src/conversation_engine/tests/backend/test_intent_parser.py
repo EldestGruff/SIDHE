@@ -31,10 +31,10 @@ class TestIntentParser:
             "content": [
                 {
                     "text": json.dumps({
-                        "type": "mission_request",
+                        "type": "quest_request",
                         "confidence": 0.85,
                         "entities": {"technology": "OAuth2", "component": "authentication"},
-                        "requires_plugins": ["github_integration"],
+                        "requires_plugins": ["quest_tracker"],
                         "context_needed": [],
                         "complexity": "complex",
                         "estimated_response_time": 15,
@@ -45,8 +45,8 @@ class TestIntentParser:
         }
     
     @pytest.mark.asyncio
-    async def test_parse_mission_request_intent(self, intent_parser, sample_claude_response):
-        """Test parsing mission request intent"""
+    async def test_parse_quest_request_intent(self, intent_parser, sample_claude_response):
+        """Test parsing quest request intent"""
         # Mock Claude API response
         intent_parser.client.messages.create.return_value = sample_claude_response
         
@@ -57,7 +57,7 @@ class TestIntentParser:
         assert result.type == IntentType.MISSION_REQUEST
         assert result.confidence == 0.85
         assert result.entities["technology"] == "OAuth2"
-        assert "github_integration" in result.requires_plugins
+        assert "quest_tracker" in result.requires_plugins
         assert result.complexity == ComplexityLevel.COMPLEX
         
         # Verify Claude API was called
@@ -157,15 +157,15 @@ class TestIntentParser:
     
     def test_fallback_intent_heuristics(self, intent_parser):
         """Test fallback intent heuristics"""
-        # Test mission request detection
-        mission_intent = intent_parser._fallback_intent("Create a new authentication system")
-        assert mission_intent.type == IntentType.MISSION_REQUEST
-        assert "github_integration" in mission_intent.requires_plugins
+        # Test quest request detection
+        quest_intent = intent_parser._fallback_intent("Create a new authentication system")
+        assert quest_intent.type == IntentType.MISSION_REQUEST
+        assert "quest_tracker" in quest_intent.requires_plugins
         
         # Test status check detection
-        status_intent = intent_parser._fallback_intent("What's the status of mission 3?")
+        status_intent = intent_parser._fallback_intent("What's the status of quest 3?")
         assert status_intent.type == IntentType.STATUS_CHECK
-        assert "github_integration" in status_intent.requires_plugins
+        assert "quest_tracker" in status_intent.requires_plugins
         
         # Test question detection
         question_intent = intent_parser._fallback_intent("How does this work?")
@@ -184,13 +184,13 @@ class TestIntentParser:
         
         assert user_input in prompt
         assert "question" in prompt
-        assert "mission_request" in prompt
+        assert "quest_request" in prompt
         assert "status_check" in prompt
         assert "command" in prompt
         assert "discussion" in prompt
         assert "troubleshooting" in prompt
-        assert "github_integration" in prompt
-        assert "memory_manager" in prompt
+        assert "quest_tracker" in prompt
+        assert "tome_keeper" in prompt
         assert "config_manager" in prompt
         assert "JSON object" in prompt
     
@@ -203,8 +203,8 @@ class TestIntentParser:
                     "text": json.dumps({
                         "type": "question",
                         "confidence": 0.9,
-                        "entities": {"context": "previous_mission"},
-                        "requires_plugins": ["memory_manager"],
+                        "entities": {"context": "previous_quest"},
+                        "requires_plugins": ["tome_keeper"],
                         "context_needed": ["conversation_history"],
                         "complexity": "simple",
                         "estimated_response_time": 8,
@@ -215,11 +215,11 @@ class TestIntentParser:
         }
         intent_parser.client.messages.create.return_value = context_response
         
-        user_input = "What was the result of that last mission?"
+        user_input = "What was the result of that last quest?"
         result = await intent_parser.parse_intent(user_input, "test_conversation_123")
         
         assert result.type == IntentType.QUESTION
-        assert "memory_manager" in result.requires_plugins
+        assert "tome_keeper" in result.requires_plugins
         assert "conversation_history" in result.context_needed
         
         # Verify conversation_id was passed to the parsing logic
@@ -232,14 +232,14 @@ class TestIntentParser:
             "content": [
                 {
                     "text": json.dumps({
-                        "type": "mission_request",
+                        "type": "quest_request",
                         "confidence": 0.95,
                         "entities": {
                             "system": "authentication",
                             "features": ["OAuth2", "JWT", "2FA"],
                             "database": "PostgreSQL"
                         },
-                        "requires_plugins": ["github_integration", "config_manager"],
+                        "requires_plugins": ["quest_tracker", "config_manager"],
                         "context_needed": ["project_requirements", "existing_auth"],
                         "complexity": "multi_step",
                         "estimated_response_time": 30,
@@ -259,7 +259,7 @@ class TestIntentParser:
         assert "JWT" in result.entities["features"]
         assert "2FA" in result.entities["features"]
         assert result.entities["database"] == "PostgreSQL"
-        assert "github_integration" in result.requires_plugins
+        assert "quest_tracker" in result.requires_plugins
         assert "config_manager" in result.requires_plugins
         assert result.complexity == ComplexityLevel.MULTI_STEP
         assert result.estimated_response_time == 30

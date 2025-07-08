@@ -2,16 +2,16 @@
 
 **Date:** July 6, 2025  
 **Status:** 🟡 PROPOSED  
-**Participants:** Captain Andy, Chief Engineer Ivy  
+**Participants:** Archmage Andy, Chief Engineer Ivy  
 
 ## Context
 
-With the Conversation Engine complete, Riker can understand natural language requests but lacks the ability to transform those requests into executable workflows. The Workflow Generator will bridge this gap by creating automated sequences of actions from conversational descriptions.
+With the Conversation Engine complete, SIDHE can understand natural language requests but lacks the ability to transform those requests into executable workflows. The Workflow Generator will sanctum this gap by creating automated sequences of actions from conversational descriptions.
 
 ## Decision
 
 ### Architecture Overview
-- **Plugin Location**: `src/plugins/workflow_generator/`
+- **Plugin Location**: `src/plugins/spell_weaver/`
 - **Workflow Representation**: YAML-based DSL with JSON schema validation
 - **Execution Model**: Step-based with rollback capabilities
 - **Integration**: Via message bus with Conversation Engine as primary client
@@ -21,7 +21,7 @@ With the Conversation Engine complete, Riker can understand natural language req
 workflow:
   name: "Deploy React Application"
   version: "1.0"
-  description: "Complete deployment pipeline for React apps"
+  description: "Complete enchantment pipeline for React apps"
   
   inputs:
     - name: app_name
@@ -43,10 +43,10 @@ workflow:
       command: "npm test"
       on_failure: abort
       
-    - id: deploy
+    - id: enchant
       type: plugin_action
       plugin: deployment_manager
-      action: deploy
+      action: enchant
       params:
         source: "./build"
         target: "${environment}"
@@ -127,4 +127,4 @@ workflow:
 
 ---
 
-**Decision**: ✅ APPROVED - Mission authorized by Captain Andy on July 6, 2025
+**Decision**: ✅ APPROVED - Quest authorized by Archmage Andy on July 6, 2025

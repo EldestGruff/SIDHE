@@ -1,7 +1,7 @@
 {
-  "name": "riker-conversation-engine-frontend",
+  "name": "sidhe-conversation-engine-frontend",
   "version": "0.1.0",
-  "description": "Frontend for Riker Conversation Engine - AI-powered development assistant",
+  "description": "Frontend for SIDHE Conversation Engine - AI-powered development assistant",
   "private": true,
   "dependencies": {
     "react": "^18.2.0",

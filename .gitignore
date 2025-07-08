@@ -49,3 +49,9 @@ away-missions/active/*
 !away-missions/active/.gitkeep
 holodeck/simulations/output/
 captains-log/*.private.md
+
+# SIDHE-specific ignores
+*.backup*
+*_backup_*
+transform_to_sidhe.py.bak
+.sidhe_temp/

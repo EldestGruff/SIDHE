@@ -20,25 +20,25 @@ class TestPluginRegistry:
     def mock_plugin_instance(self):
         """Mock plugin instance"""
         instance = MagicMock()
-        instance.health_check = MagicMock(return_value="operational")
+        instance.health_check = MagicMock(return_value="enchanted")
         return instance
     
     @pytest.mark.asyncio
     async def test_discover_plugins_success(self, plugin_registry):
         """Test successful plugin discovery"""
         # Mock successful plugin imports
-        mock_memory_manager = MagicMock()
+        mock_tome_keeper = MagicMock()
         mock_github_manager = MagicMock()
         mock_config_manager = MagicMock()
         
         def mock_import(module_name, fromlist):
-            if module_name == "memory_manager.plugin_interface":
+            if module_name == "tome_keeper.plugin_interface":
                 mock_module = MagicMock()
-                mock_module.MemoryManager = MagicMock(return_value=mock_memory_manager)
+                mock_module.MemoryManager = MagicMock(return_value=mock_tome_keeper)
                 return mock_module
-            elif module_name == "github_integration.plugin_interface":
+            elif module_name == "quest_tracker.plugin_interface":
                 mock_module = MagicMock()
-                mock_module.GitHubManager = MagicMock(return_value=mock_github_manager)
+                mock_module.QuestTracker = MagicMock(return_value=mock_github_manager)
                 return mock_module
             elif module_name == "config_manager.plugin_interface":
                 mock_module = MagicMock()
@@ -50,29 +50,29 @@ class TestPluginRegistry:
             await plugin_registry.discover_plugins()
         
         # Verify all plugins were registered
-        assert "memory_manager" in plugin_registry.plugins
-        assert "github_integration" in plugin_registry.plugins
+        assert "tome_keeper" in plugin_registry.plugins
+        assert "quest_tracker" in plugin_registry.plugins
         assert "config_manager" in plugin_registry.plugins
         
         # Verify plugin status
-        assert plugin_registry.plugins["memory_manager"]["status"] == "active"
-        assert plugin_registry.plugins["github_integration"]["status"] == "active"
+        assert plugin_registry.plugins["tome_keeper"]["status"] == "active"
+        assert plugin_registry.plugins["quest_tracker"]["status"] == "active"
         assert plugin_registry.plugins["config_manager"]["status"] == "active"
         
         # Verify plugin instances
-        assert plugin_registry.plugins["memory_manager"]["instance"] == mock_memory_manager
-        assert plugin_registry.plugins["github_integration"]["instance"] == mock_github_manager
+        assert plugin_registry.plugins["tome_keeper"]["instance"] == mock_tome_keeper
+        assert plugin_registry.plugins["quest_tracker"]["instance"] == mock_github_manager
         assert plugin_registry.plugins["config_manager"]["instance"] == mock_config_manager
     
     @pytest.mark.asyncio
     async def test_discover_plugins_import_error(self, plugin_registry):
         """Test plugin discovery with import errors"""
         def mock_import(module_name, fromlist):
-            if module_name == "memory_manager.plugin_interface":
+            if module_name == "tome_keeper.plugin_interface":
                 raise ImportError("Module not found")
-            elif module_name == "github_integration.plugin_interface":
+            elif module_name == "quest_tracker.plugin_interface":
                 mock_module = MagicMock()
-                mock_module.GitHubManager = MagicMock(return_value=MagicMock())
+                mock_module.QuestTracker = MagicMock(return_value=MagicMock())
                 return mock_module
             else:
                 raise ImportError("Module not found")
@@ -80,14 +80,14 @@ class TestPluginRegistry:
         with patch('builtins.__import__', side_effect=mock_import):
             await plugin_registry.discover_plugins()
         
-        # Verify memory_manager marked as not available
-        assert plugin_registry.plugins["memory_manager"]["status"] == "not_available"
-        assert plugin_registry.plugins["memory_manager"]["instance"] is None
-        assert "error" in plugin_registry.plugins["memory_manager"]
+        # Verify tome_keeper marked as not available
+        assert plugin_registry.plugins["tome_keeper"]["status"] == "not_available"
+        assert plugin_registry.plugins["tome_keeper"]["instance"] is None
+        assert "error" in plugin_registry.plugins["tome_keeper"]
         
-        # Verify github_integration loaded successfully
-        assert plugin_registry.plugins["github_integration"]["status"] == "active"
-        assert plugin_registry.plugins["github_integration"]["instance"] is not None
+        # Verify quest_tracker loaded successfully
+        assert plugin_registry.plugins["quest_tracker"]["status"] == "active"
+        assert plugin_registry.plugins["quest_tracker"]["instance"] is not None
         
         # Verify config_manager marked as not available
         assert plugin_registry.plugins["config_manager"]["status"] == "not_available"
@@ -96,7 +96,7 @@ class TestPluginRegistry:
     async def test_discover_plugins_instantiation_error(self, plugin_registry):
         """Test plugin discovery with instantiation errors"""
         def mock_import(module_name, fromlist):
-            if module_name == "memory_manager.plugin_interface":
+            if module_name == "tome_keeper.plugin_interface":
                 mock_module = MagicMock()
                 mock_module.MemoryManager = MagicMock(side_effect=Exception("Instantiation failed"))
                 return mock_module
@@ -105,22 +105,22 @@ class TestPluginRegistry:
         with patch('builtins.__import__', side_effect=mock_import):
             await plugin_registry.discover_plugins()
         
-        # Verify memory_manager marked as error
-        assert plugin_registry.plugins["memory_manager"]["status"] == "error"
-        assert plugin_registry.plugins["memory_manager"]["instance"] is None
-        assert "error" in plugin_registry.plugins["memory_manager"]
+        # Verify tome_keeper marked as error
+        assert plugin_registry.plugins["tome_keeper"]["status"] == "error"
+        assert plugin_registry.plugins["tome_keeper"]["instance"] is None
+        assert "error" in plugin_registry.plugins["tome_keeper"]
     
     @pytest.mark.asyncio
     async def test_get_status(self, plugin_registry):
         """Test getting plugin status"""
         # Set up plugin data
         plugin_registry.plugins = {
-            "memory_manager": {
+            "tome_keeper": {
                 "status": "active",
                 "instance": MagicMock(),
                 "last_check": "2025-01-01T00:00:00Z"
             },
-            "github_integration": {
+            "quest_tracker": {
                 "status": "not_available",
                 "instance": None,
                 "error": "Import error",
@@ -129,20 +129,20 @@ class TestPluginRegistry:
         }
         
         plugin_registry.plugin_health = {
-            "memory_manager": "operational",
-            "github_integration": "not_available"
+            "tome_keeper": "enchanted",
+            "quest_tracker": "not_available"
         }
         
         status = await plugin_registry.get_status()
         
-        assert status["memory_manager"] == "active"
-        assert status["github_integration"] == "not_available"
+        assert status["tome_keeper"] == "active"
+        assert status["quest_tracker"] == "not_available"
     
     @pytest.mark.asyncio
     async def test_get_status_with_health_issues(self, plugin_registry):
         """Test getting plugin status with health issues"""
         plugin_registry.plugins = {
-            "memory_manager": {
+            "tome_keeper": {
                 "status": "active",
                 "instance": MagicMock(),
                 "last_check": "2025-01-01T00:00:00Z"
@@ -150,18 +150,18 @@ class TestPluginRegistry:
         }
         
         plugin_registry.plugin_health = {
-            "memory_manager": "degraded"
+            "tome_keeper": "degraded"
         }
         
         status = await plugin_registry.get_status()
         
-        assert status["memory_manager"] == "active:degraded"
+        assert status["tome_keeper"] == "active:degraded"
     
     @pytest.mark.asyncio
     async def test_get_plugin_info_exists(self, plugin_registry):
         """Test getting plugin info for existing plugin"""
         plugin_registry.plugins = {
-            "memory_manager": {
+            "tome_keeper": {
                 "info": {
                     "name": "Memory Manager",
                     "description": "Memory and context management",
@@ -174,15 +174,15 @@ class TestPluginRegistry:
         }
         
         plugin_registry.plugin_health = {
-            "memory_manager": "operational"
+            "tome_keeper": "enchanted"
         }
         
-        info = await plugin_registry.get_plugin_info("memory_manager")
+        info = await plugin_registry.get_plugin_info("tome_keeper")
         
-        assert info["id"] == "memory_manager"
+        assert info["id"] == "tome_keeper"
         assert info["info"]["name"] == "Memory Manager"
         assert info["status"] == "active"
-        assert info["health"] == "operational"
+        assert info["health"] == "enchanted"
         assert info["available"] is True
     
     @pytest.mark.asyncio
@@ -197,11 +197,11 @@ class TestPluginRegistry:
     async def test_get_available_plugins(self, plugin_registry):
         """Test getting available plugins"""
         plugin_registry.plugins = {
-            "memory_manager": {
+            "tome_keeper": {
                 "status": "active",
                 "instance": MagicMock()
             },
-            "github_integration": {
+            "quest_tracker": {
                 "status": "not_available",
                 "instance": None
             },
@@ -213,22 +213,22 @@ class TestPluginRegistry:
         
         available = await plugin_registry.get_available_plugins()
         
-        assert "memory_manager" in available
+        assert "tome_keeper" in available
         assert "config_manager" in available
-        assert "github_integration" not in available
+        assert "quest_tracker" not in available
         assert len(available) == 2
     
     @pytest.mark.asyncio
     async def test_is_plugin_available_true(self, plugin_registry):
         """Test checking if plugin is available - true case"""
         plugin_registry.plugins = {
-            "memory_manager": {
+            "tome_keeper": {
                 "status": "active",
                 "instance": MagicMock()
             }
         }
         
-        available = await plugin_registry.is_plugin_available("memory_manager")
+        available = await plugin_registry.is_plugin_available("tome_keeper")
         
         assert available is True
     
@@ -236,22 +236,22 @@ class TestPluginRegistry:
     async def test_is_plugin_available_false(self, plugin_registry):
         """Test checking if plugin is available - false cases"""
         plugin_registry.plugins = {
-            "memory_manager": {
+            "tome_keeper": {
                 "status": "not_available",
                 "instance": None
             },
-            "github_integration": {
+            "quest_tracker": {
                 "status": "active",
                 "instance": None  # Status active but no instance
             }
         }
         
         # Plugin not available
-        available1 = await plugin_registry.is_plugin_available("memory_manager")
+        available1 = await plugin_registry.is_plugin_available("tome_keeper")
         assert available1 is False
         
         # Plugin active but no instance
-        available2 = await plugin_registry.is_plugin_available("github_integration")
+        available2 = await plugin_registry.is_plugin_available("quest_tracker")
         assert available2 is False
         
         # Plugin doesn't exist
@@ -262,14 +262,14 @@ class TestPluginRegistry:
     async def test_get_plugin_capabilities(self, plugin_registry):
         """Test getting plugin capabilities"""
         plugin_registry.plugins = {
-            "memory_manager": {
+            "tome_keeper": {
                 "info": {
                     "capabilities": ["store_memory", "get_memory", "clear_memory"]
                 }
             }
         }
         
-        capabilities = await plugin_registry.get_plugin_capabilities("memory_manager")
+        capabilities = await plugin_registry.get_plugin_capabilities("tome_keeper")
         
         assert "store_memory" in capabilities
         assert "get_memory" in capabilities
@@ -287,35 +287,35 @@ class TestPluginRegistry:
     async def test_check_plugin_health_success(self, plugin_registry):
         """Test plugin health check success"""
         mock_instance = MagicMock()
-        mock_instance.health_check.return_value = "operational"
+        mock_instance.health_check.return_value = "enchanted"
         
         plugin_registry.plugins = {
-            "memory_manager": {
+            "tome_keeper": {
                 "instance": mock_instance
             }
         }
         
         await plugin_registry._check_plugin_health()
         
-        assert plugin_registry.plugin_health["memory_manager"] == "operational"
+        assert plugin_registry.plugin_health["tome_keeper"] == "enchanted"
         mock_instance.health_check.assert_called_once()
     
     @pytest.mark.asyncio
     async def test_check_plugin_health_async(self, plugin_registry):
         """Test plugin health check with async method"""
         mock_instance = MagicMock()
-        async_health_check = AsyncMock(return_value="operational")
+        async_health_check = AsyncMock(return_value="enchanted")
         mock_instance.health_check = async_health_check
         
         plugin_registry.plugins = {
-            "memory_manager": {
+            "tome_keeper": {
                 "instance": mock_instance
             }
         }
         
         await plugin_registry._check_plugin_health()
         
-        assert plugin_registry.plugin_health["memory_manager"] == "operational"
+        assert plugin_registry.plugin_health["tome_keeper"] == "enchanted"
         async_health_check.assert_called_once()
     
     @pytest.mark.asyncio
@@ -325,28 +325,28 @@ class TestPluginRegistry:
         del mock_instance.health_check  # Remove health_check method
         
         plugin_registry.plugins = {
-            "memory_manager": {
+            "tome_keeper": {
                 "instance": mock_instance
             }
         }
         
         await plugin_registry._check_plugin_health()
         
-        # Should assume operational if no health check method
-        assert plugin_registry.plugin_health["memory_manager"] == "operational"
+        # Should assume enchanted if no health check method
+        assert plugin_registry.plugin_health["tome_keeper"] == "enchanted"
     
     @pytest.mark.asyncio
     async def test_check_plugin_health_no_instance(self, plugin_registry):
         """Test plugin health check when no instance exists"""
         plugin_registry.plugins = {
-            "memory_manager": {
+            "tome_keeper": {
                 "instance": None
             }
         }
         
         await plugin_registry._check_plugin_health()
         
-        assert plugin_registry.plugin_health["memory_manager"] == "not_available"
+        assert plugin_registry.plugin_health["tome_keeper"] == "not_available"
     
     @pytest.mark.asyncio
     async def test_check_plugin_health_exception(self, plugin_registry):
@@ -355,43 +355,43 @@ class TestPluginRegistry:
         mock_instance.health_check.side_effect = Exception("Health check failed")
         
         plugin_registry.plugins = {
-            "memory_manager": {
+            "tome_keeper": {
                 "instance": mock_instance
             }
         }
         
         await plugin_registry._check_plugin_health()
         
-        assert plugin_registry.plugin_health["memory_manager"] == "degraded"
+        assert plugin_registry.plugin_health["tome_keeper"] == "degraded"
     
     @pytest.mark.asyncio
     async def test_refresh_health(self, plugin_registry):
         """Test refreshing plugin health"""
         mock_instance = MagicMock()
-        mock_instance.health_check.return_value = "operational"
+        mock_instance.health_check.return_value = "enchanted"
         
         plugin_registry.plugins = {
-            "memory_manager": {
+            "tome_keeper": {
                 "instance": mock_instance
             }
         }
         
         await plugin_registry.refresh_health()
         
-        assert plugin_registry.plugin_health["memory_manager"] == "operational"
+        assert plugin_registry.plugin_health["tome_keeper"] == "enchanted"
     
     def test_get_plugin_instance_success(self, plugin_registry):
         """Test getting plugin instance successfully"""
         mock_instance = MagicMock()
         
         plugin_registry.plugins = {
-            "memory_manager": {
+            "tome_keeper": {
                 "status": "active",
                 "instance": mock_instance
             }
         }
         
-        instance = plugin_registry.get_plugin_instance("memory_manager")
+        instance = plugin_registry.get_plugin_instance("tome_keeper")
         
         assert instance == mock_instance
     
@@ -404,32 +404,32 @@ class TestPluginRegistry:
     def test_get_plugin_instance_not_active(self, plugin_registry):
         """Test getting plugin instance that's not active"""
         plugin_registry.plugins = {
-            "memory_manager": {
+            "tome_keeper": {
                 "status": "not_available",
                 "instance": MagicMock()
             }
         }
         
-        instance = plugin_registry.get_plugin_instance("memory_manager")
+        instance = plugin_registry.get_plugin_instance("tome_keeper")
         
         assert instance is None
     
     @pytest.mark.asyncio
     async def test_plugin_registration_metadata(self, plugin_registry):
         """Test that plugin registration includes proper metadata"""
-        mock_memory_manager = MagicMock()
+        mock_tome_keeper = MagicMock()
         
         def mock_import(module_name, fromlist):
-            if module_name == "memory_manager.plugin_interface":
+            if module_name == "tome_keeper.plugin_interface":
                 mock_module = MagicMock()
-                mock_module.MemoryManager = MagicMock(return_value=mock_memory_manager)
+                mock_module.MemoryManager = MagicMock(return_value=mock_tome_keeper)
                 return mock_module
             return None
         
         with patch('builtins.__import__', side_effect=mock_import):
             await plugin_registry.discover_plugins()
         
-        plugin_data = plugin_registry.plugins["memory_manager"]
+        plugin_data = plugin_registry.plugins["tome_keeper"]
         
         # Verify metadata structure
         assert "info" in plugin_data

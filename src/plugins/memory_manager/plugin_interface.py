@@ -43,7 +43,7 @@ class MemoryManager:
             return False
             
         try:
-            key = f"riker:memory:{conversation_id}"
+            key = f"sidhe:memory:{conversation_id}"
             serialized_data = json.dumps(memory_data)
             
             # Store with 24-hour expiration
@@ -85,7 +85,7 @@ class MemoryManager:
             return None
             
         try:
-            key = f"riker:memory:{conversation_id}"
+            key = f"sidhe:memory:{conversation_id}"
             serialized_data = self.redis_client.get(key)
             
             if serialized_data is None:
@@ -122,7 +122,7 @@ class MemoryManager:
             return False
             
         try:
-            key = f"riker:memory:{conversation_id}"
+            key = f"sidhe:memory:{conversation_id}"
             
             # Check if key exists
             if not self.redis_client.exists(key):
@@ -161,7 +161,7 @@ class MemoryManager:
             return False
             
         try:
-            key = f"riker:memory:{conversation_id}"
+            key = f"sidhe:memory:{conversation_id}"
             deleted_count = self.redis_client.delete(key)
             
             if deleted_count > 0:
