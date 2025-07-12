@@ -1,0 +1,63 @@
+quality_control:
+  enabled: true
+  
+  linting:
+    python:
+      enabled: true
+      tools: [black, flake8, mypy]
+      black:
+        line_length: 88
+        target_version: py311
+      flake8:
+        max_line_length: 88
+        ignore: [E203, W503]
+        max_complexity: 10
+      mypy:
+        strict: true
+        ignore_missing_imports: true
+    
+    javascript:
+      enabled: true
+      tools: [eslint, prettier]
+      prettier:
+        tab_width: 2
+        semi: true
+        single_quote: true
+      eslint:
+        extends: ["@typescript-eslint/recommended"]
+        rules:
+          no_unused_vars: error
+          prefer_const: error
+          
+  coverage:
+    enabled: true
+    global:
+      minimum_coverage: 80
+      target_coverage: 90
+    by_component:
+      backend: 90
+      frontend: 75
+      plugins: 85
+    critical_paths:
+      - path: "src/conversation_engine/backend/main.py"
+        minimum_coverage: 95
+      - path: "src/plugins/*/main.py"
+        minimum_coverage: 90
+        
+  quality_metrics:
+    complexity:
+      cyclomatic_threshold: 10
+      cognitive_threshold: 15
+    documentation:
+      minimum_coverage: 80
+      public_api_coverage: 95
+    maintainability:
+      max_file_size: 500
+      max_function_length: 50
+      
+  quality_gates:
+    quest_completion: true
+    pull_request: true
+    main_branch: true
+    minimum_score: 75
+    target_score: 85
