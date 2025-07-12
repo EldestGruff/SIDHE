@@ -53,6 +53,7 @@ open http://localhost:3000
 - **Quest Tracker**: GitHub integration for project management
 - **Memory Manager**: Conversation context and project history
 - **Config Manager**: System configuration and settings
+- **Quality Control**: Automated code linting, testing, and quality assurance
 - **Extensible Architecture**: Easy plugin development and integration
 
 ## 🏗️ System Architecture
@@ -86,6 +87,7 @@ open http://localhost:3000
 - **Project Analysis**: Understand codebases and suggest improvements
 - **Feature Planning**: Break down features into actionable tasks
 - **Code Generation**: Create boilerplate and implement features
+- **Quality Assurance**: Automated linting, testing, and code quality validation
 - **Testing Guidance**: Help write tests and improve code quality
 
 ### 🔮 Mystical Features
@@ -105,10 +107,11 @@ SIDHE/
 │   │   └── main.py                  # Main application entry
 │   └── frontend/                    # React frontend interface
 │       └── src/ChatInterface.jsx    # Main chat component
-├── plugins/                         # Plugin ecosystem
+├── src/plugins/                     # Plugin ecosystem
 │   ├── quest_tracker/              # GitHub integration
 │   ├── memory_manager/             # Conversation memory
-│   └── config_manager/             # Configuration management
+│   ├── config_manager/             # Configuration management
+│   └── quality_control/            # Code quality assurance
 ├── start-sidhe.py                  # Main startup script
 ├── setup-env.sh                   # Environment setup
 └── README.md                       # This file
@@ -208,7 +211,7 @@ MAX_CONTEXT_TOKENS=4000
 ### Plugin Configuration
 Plugins can be enabled/disabled in the startup script or through environment variables.
 
-## 🧪 Testing
+## 🧪 Testing & Quality Control
 
 ```bash
 # Run backend tests
@@ -218,6 +221,15 @@ python -m pytest
 # Run frontend tests
 cd src/conversation_engine/frontend
 npm test
+
+# Quality control checks
+python -m black src/  # Format Python code
+python -m flake8 src/  # Lint Python code
+python -m mypy src/   # Type checking
+
+# Frontend quality checks
+npm run lint          # ESLint checking
+npm run format        # Prettier formatting
 
 # Health check
 curl http://localhost:8000/health
@@ -254,6 +266,7 @@ Check system status at any time:
 - ✅ Real-time WebSocket communication
 - ✅ Intent classification and smart routing
 - ✅ Plugin ecosystem with GitHub integration
+- ✅ Quality Control Plugin Cluster with automated linting and testing
 - ✅ Mystical SIDHE-branded interface
 - ✅ Comprehensive development assistance
 
