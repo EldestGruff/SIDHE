@@ -1,0 +1,1 @@
+# Coverage analysis module for Quality Control Plugin

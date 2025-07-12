@@ -1,0 +1,1 @@
+# Linting module for Quality Control Plugin

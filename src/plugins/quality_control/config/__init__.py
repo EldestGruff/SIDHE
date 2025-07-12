@@ -1,0 +1,1 @@
+# Configuration module for Quality Control Plugin
