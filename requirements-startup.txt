@@ -1,0 +1,20 @@
+# SIDHE Startup Script Dependencies
+# Install with: pip install -r requirements-startup.txt
+
+# Core async HTTP client for health checks
+aiohttp>=3.8.0
+
+# Process management and system monitoring
+psutil>=5.9.0
+
+# Redis client for health checks
+redis>=4.5.0
+
+# Additional utilities
+pydantic>=2.0.0
+uvicorn>=0.20.0
+fastapi>=0.100.0
+
+# Development and testing
+pytest>=7.0.0
+pytest-asyncio>=0.21.0

@@ -1,0 +1,27 @@
+name: Plugin Certification
+on:
+  pull_request:
+    paths:
+      - 'src/plugins/**'
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install redis pydantic pytest
+      
+      - name: Run Plugin Certification
+        run: |
+          for plugin in src/plugins/*/plugin_interface.py; do
+            echo "Certifying $plugin..."
+            python src/core/pdk/plugin_certification.py "$plugin" --format markdown
+          done

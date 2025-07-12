@@ -11,6 +11,13 @@ from datetime import datetime
 # Add plugins directory to path
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../..", "plugins"))
 
+# Add core directory to path for PDK imports
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../.."))
+
+# Import PDK classes
+from core.pdk.sidhe_pdk import EnchantedPlugin
+from core.pdk.plugin_certification import PluginCertifier, CertificationLevel
+
 logger = logging.getLogger(__name__)
 
 class PluginRegistry:
@@ -19,6 +26,7 @@ class PluginRegistry:
     def __init__(self):
         self.plugins = {}
         self.plugin_health = {}
+        self.plugin_certifier = PluginCertifier()
     
     async def discover_plugins(self):
         """Discover available plugins and register them"""
@@ -30,21 +38,28 @@ class PluginRegistry:
                     "description": "Conversation memory and context management",
                     "module": "tome_keeper.plugin_interface",
                     "class": "MemoryManager",
-                    "capabilities": ["store_memory", "get_memory", "clear_memory"]
+                    "capabilities": ["store_memory", "retrieve_memory", "extend_memory_ttl", "clear_memory"]
                 },
                 "quest_tracker": {
                     "name": "GitHub Integration", 
                     "description": "Quest management and GitHub operations",
                     "module": "quest_tracker.plugin_interface",
                     "class": "QuestTracker", 
-                    "capabilities": ["get_away_quests", "create_quest", "update_quest_progress"]
+                    "capabilities": ["get_away_quests", "get_quest_details", "create_feature_branch", "create_pull_request", "update_quest_progress"]
                 },
                 "config_manager": {
                     "name": "Config Manager",
                     "description": "Configuration and settings management",
                     "module": "config_manager.plugin_interface", 
                     "class": "ConfigManager",
-                    "capabilities": ["load_config", "save_config", "get_value", "set_value"]
+                    "capabilities": ["load_config", "save_config", "get_value", "set_value", "merge_configs"]
+                },
+                "spell_weaver": {
+                    "name": "Workflow Generator",
+                    "description": "AI-powered workflow generation and execution",
+                    "module": "spell_weaver.plugin_interface",
+                    "class": "WorkflowGenerator",
+                    "capabilities": ["generate_from_text", "execute_workflow", "save_workflow", "load_workflow", "list_workflows", "list_templates"]
                 }
             }
             
@@ -61,13 +76,27 @@ class PluginRegistry:
                     # Test instantiation
                     plugin_instance = plugin_class()
                     
-                    # Register the plugin
-                    self.plugins[plugin_id] = {
-                        "info": plugin_info,
-                        "instance": plugin_instance,
-                        "status": "active",
-                        "last_check": datetime.now().isoformat()
-                    }
+                    # Check PDK compliance and run certification
+                    certification_result = await self.register_plugin(plugin_id, plugin_class, plugin_info)
+                    
+                    if certification_result["certified"]:
+                        # Register the plugin
+                        self.plugins[plugin_id] = {
+                            "info": plugin_info,
+                            "instance": plugin_instance,
+                            "status": "active",
+                            "certification": certification_result,
+                            "last_check": datetime.now().isoformat()
+                        }
+                    else:
+                        # Plugin failed certification
+                        self.plugins[plugin_id] = {
+                            "info": plugin_info,
+                            "instance": None,
+                            "status": "certification_failed",
+                            "certification": certification_result,
+                            "last_check": datetime.now().isoformat()
+                        }
                     
                     logger.info(f"Registered plugin: {plugin_id} ({plugin_info['name']})")
                     
@@ -193,3 +222,59 @@ class PluginRegistry:
             return None
             
         return plugin_data["instance"]
+    
+    async def register_plugin(self, plugin_id: str, plugin_class: type, plugin_info: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Register a plugin with PDK compliance checking and certification
+        
+        Args:
+            plugin_id: Unique identifier for the plugin
+            plugin_class: The plugin class to register
+            plugin_info: Plugin metadata
+            
+        Returns:
+            Dictionary containing certification results
+        """
+        try:
+            # Check that plugin inherits from EnchantedPlugin
+            if not issubclass(plugin_class, EnchantedPlugin):
+                logger.error(f"Plugin {plugin_id} does not inherit from EnchantedPlugin")
+                return {
+                    "certified": False,
+                    "level": CertificationLevel.FAILED,
+                    "errors": ["Plugin must inherit from EnchantedPlugin"],
+                    "warnings": []
+                }
+            
+            # Create temporary instance for certification
+            temp_instance = plugin_class()
+            
+            # Run certification
+            certification_result = await self.plugin_certifier.certify_plugin(temp_instance)
+            
+            # Only register plugins that pass certification (not FAILED level)
+            certified = certification_result.level != CertificationLevel.FAILED
+            
+            # Log certification results
+            if certified:
+                logger.info(f"Plugin {plugin_id} certified at level {certification_result.level.value}")
+                if certification_result.warnings:
+                    logger.warning(f"Plugin {plugin_id} warnings: {certification_result.warnings}")
+            else:
+                logger.error(f"Plugin {plugin_id} failed certification: {certification_result.errors}")
+            
+            return {
+                "certified": certified,
+                "level": certification_result.level,
+                "errors": certification_result.errors,
+                "warnings": certification_result.warnings
+            }
+            
+        except Exception as e:
+            logger.error(f"Error during plugin registration for {plugin_id}: {e}")
+            return {
+                "certified": False,
+                "level": CertificationLevel.FAILED,
+                "errors": [f"Registration error: {str(e)}"],
+                "warnings": []
+            }

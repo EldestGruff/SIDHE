@@ -1,0 +1,21 @@
+#!/bin/bash
+# SIDHE Quick Launcher
+# Simple wrapper script for the SIDHE startup system
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+STARTUP_SCRIPT="$SCRIPT_DIR/start-sidhe.py"
+
+# Check if startup script exists
+if [ ! -f "$STARTUP_SCRIPT" ]; then
+    echo "❌ SIDHE startup script not found at $STARTUP_SCRIPT"
+    exit 1
+fi
+
+# Default to development mode if no arguments provided
+if [ $# -eq 0 ]; then
+    echo "🚀 Starting SIDHE in development mode..."
+    exec python "$STARTUP_SCRIPT" --mode development --plugins
+else
+    # Pass all arguments to the startup script
+    exec python "$STARTUP_SCRIPT" "$@"
+fi

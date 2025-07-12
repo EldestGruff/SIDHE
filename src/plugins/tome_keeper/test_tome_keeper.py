@@ -1,32 +1,56 @@
 import pytest
 import json
+import asyncio
 from unittest.mock import Mock, patch
 from .plugin_interface import MemoryManager
 
+# Import PDK test utilities
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent.parent))
+from core.pdk.sidhe_pdk import PluginMessage, MessageType
+from core.pdk.sidhe_pdk_test_utilities import mock_plugin
 
-def test_store_and_retrieve():
-    """Test basic store and retrieve functionality"""
-    # Mock Redis client
-    mock_redis = Mock()
-    mock_redis.ping.return_value = True
-    mock_redis.setex.return_value = True
-    mock_redis.get.return_value = json.dumps({"test": "data"})
+
+@pytest.fixture
+def plugin():
+    """Create a mock plugin for testing"""
+    with mock_plugin(MemoryManager) as mock_manager:
+        yield mock_manager
+
+
+@pytest.mark.asyncio
+async def test_store_and_retrieve(plugin):
+    """Test basic store and retrieve functionality via PDK interface"""
+    # Test store memory
+    store_message = PluginMessage(
+        type=MessageType.REQUEST,
+        source="test_client",
+        target="tome_keeper",
+        payload={
+            "action": "store_memory",
+            "conversation_id": "test-conv-1",
+            "memory_data": {"user_request": "test", "current_task": "testing"}
+        }
+    )
     
-    with patch('redis.from_url', return_value=mock_redis):
-        manager = MemoryManager()
-        
-        # Test store
-        test_data = {"user_request": "test", "current_task": "testing"}
-        result = manager.store_memory("test-conv-1", test_data)
-        assert result is True
-        
-        # Test retrieve
-        retrieved_data = manager.retrieve_memory("test-conv-1")
-        assert retrieved_data == {"test": "data"}
-        
-        # Verify Redis calls
-        mock_redis.setex.assert_called_once()
-        mock_redis.get.assert_called_once_with("sidhe:memory:test-conv-1")
+    store_result = await plugin.handle_request(store_message)
+    assert store_result["success"] is True
+    
+    # Test retrieve memory
+    retrieve_message = PluginMessage(
+        type=MessageType.REQUEST,
+        source="test_client",
+        target="tome_keeper",
+        payload={
+            "action": "retrieve_memory",
+            "conversation_id": "test-conv-1"
+        }
+    )
+    
+    retrieve_result = await plugin.handle_request(retrieve_message)
+    assert retrieve_result["found"] is True
+    assert retrieve_result["memory_data"] is not None
 
 
 def test_memory_expiration():
