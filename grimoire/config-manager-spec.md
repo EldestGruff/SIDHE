@@ -55,7 +55,7 @@ class ConfigManager:
         """
         # Set up config directory
         # Initialize internal config store
-        # Set up environment prefix (e.g., RIKER_)
+        # Set up environment prefix (e.g., SIDHE_)
         pass
     
     def load_config(self, config_name: str, format: str = "auto") -> Dict[str, Any]:
@@ -111,7 +111,7 @@ class ConfigManager:
         Returns:
             Configuration value or default
         """
-        # Check environment first (RIKER_DATABASE_HOST)
+        # Check environment first (SIDHE_DATABASE_HOST)
         # Check loaded configs
         # Support nested access with dots
         # Return default if not found
@@ -268,7 +268,7 @@ class EnvironmentOverride:
             Dictionary of overrides from environment
         """
         # Scan environment variables
-        # Convert RIKER_DATABASE_HOST to database.host
+        # Convert SIDHE_DATABASE_HOST to database.host
         # Parse types (bool, int, float, string)
         # Return nested dictionary
         pass
@@ -333,8 +333,8 @@ def test_load_json_config(tmp_path):
 def test_environment_override():
     """Test environment variable overrides"""
     # Set test environment variables
-    os.environ["RIKER_DATABASE_HOST"] = "production.db"
-    os.environ["RIKER_DATABASE_PORT"] = "3306"
+    os.environ["SIDHE_DATABASE_HOST"] = "production.db"
+    os.environ["SIDHE_DATABASE_PORT"] = "3306"
     
     # Load config and verify overrides applied
     # Clean up environment
@@ -386,7 +386,7 @@ db_host = config.get_value("database.host", default="localhost")
 db_port = config.get_value("database.port", default=5432)
 
 # Environment override example
-# If RIKER_DATABASE_HOST is set, it overrides the file value
+# If SIDHE_DATABASE_HOST is set, it overrides the file value
 actual_host = config.get_value("database.host")  # Returns env value if set
 
 # Save updated configuration
@@ -407,7 +407,7 @@ merged = config.merge_configs(base_config, env_config)
 database:
   host: localhost
   port: 5432
-  name: riker_db
+  name: sidhe_db
   
 redis:
   url: redis://localhost:6379
@@ -439,7 +439,7 @@ logging:
 
 - [ ] Can load YAML and JSON configuration files
 - [ ] Auto-detects file format from extension
-- [ ] Environment variables override file values (RIKER_* prefix)
+- [ ] Environment variables override file values (SIDHE_* prefix)
 - [ ] Supports nested configuration with dot notation access
 - [ ] Can save configurations preserving structure and formatting
 - [ ] Deep merges multiple configuration sources correctly
@@ -456,7 +456,7 @@ PyYAML==6.0.1
 
 ## Implementation Notes
 
-1. **Environment Override Format**: `RIKER_SECTION_SUBSECTION_KEY` becomes `section.subsection.key`
+1. **Environment Override Format**: `SIDHE_SECTION_SUBSECTION_KEY` becomes `section.subsection.key`
 2. **Type Detection**: Environment values "true"/"false" → bool, numeric strings → int/float
 3. **File Organization**: Keep configs in a `config/` directory at project root
 4. **Error Handling**: Always provide clear messages about what config is missing/invalid

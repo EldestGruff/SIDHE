@@ -221,14 +221,14 @@ class TestConfigManager:
         
         # Clean up environment variables
         for key in list(os.environ.keys()):
-            if key.startswith("RIKER_"):
+            if key.startswith("SIDHE_"):
                 del os.environ[key]
     
     def teardown_method(self):
         """Clean up test environment"""
         # Clean up environment variables
         for key in list(os.environ.keys()):
-            if key.startswith("RIKER_"):
+            if key.startswith("SIDHE_"):
                 del os.environ[key]
     
     @patch.object(ConfigLoader, 'load_yaml')
@@ -285,7 +285,7 @@ class TestConfigManager:
         }
         
         # Set environment override
-        os.environ["RIKER_DATABASE_HOST"] = "production.db"
+        os.environ["SIDHE_DATABASE_HOST"] = "production.db"
         
         result = self.config_manager.load_config("settings")
         
@@ -336,7 +336,7 @@ class TestConfigManager:
             "database": {"host": "localhost"}
         }
         
-        os.environ["RIKER_DATABASE_HOST"] = "override.db"
+        os.environ["SIDHE_DATABASE_HOST"] = "override.db"
         
         # Environment should take precedence
         assert self.config_manager.get_value("database.host") == "override.db"
@@ -452,13 +452,13 @@ class TestConfigIntegration:
         
         # Clean up environment
         for key in list(os.environ.keys()):
-            if key.startswith("RIKER_"):
+            if key.startswith("SIDHE_"):
                 del os.environ[key]
     
     def teardown_method(self):
         """Clean up integration test environment"""
         for key in list(os.environ.keys()):
-            if key.startswith("RIKER_"):
+            if key.startswith("SIDHE_"):
                 del os.environ[key]
     
     def test_full_yaml_workflow(self):
@@ -491,8 +491,8 @@ class TestConfigIntegration:
         assert loaded_config["features"]["cache"]["enabled"] is False
         
         # Test environment override
-        os.environ["RIKER_DATABASE_HOST"] = "production.example.com"
-        os.environ["RIKER_FEATURES_CACHE_ENABLED"] = "true"
+        os.environ["SIDHE_DATABASE_HOST"] = "production.example.com"
+        os.environ["SIDHE_FEATURES_CACHE_ENABLED"] = "true"
         
         # Reload with overrides
         reloaded_config = self.config_manager.load_config("integration_test")

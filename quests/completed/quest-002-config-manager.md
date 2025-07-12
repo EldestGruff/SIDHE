@@ -76,7 +76,7 @@ The Config Manager serves as the foundation for SIDHE's enchanted parameters, en
 database:
   host: localhost
   port: 5432
-  name: riker_db
+  name: sidhe_db
   
 api:
   host: 0.0.0.0
@@ -97,13 +97,13 @@ plugins:
 #### Environment Override Patterns
 ```bash
 # Override database host
-export RIKER_DATABASE_HOST=production.db.example.com
+export SIDHE_DATABASE_HOST=production.db.example.com
 
 # Override API debug mode
-export RIKER_API_DEBUG=true
+export SIDHE_API_DEBUG=true
 
 # Override logging level
-export RIKER_LOGGING_LEVEL=DEBUG
+export SIDHE_LOGGING_LEVEL=DEBUG
 ```
 
 #### Plugin API

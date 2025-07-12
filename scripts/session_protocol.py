@@ -6,10 +6,10 @@ This module ensures every conversation follows proper SIDHE development processe
 maintaining consistency across AI instances and conversations.
 
 Usage:
-    from session_protocol import RikerSession
+    from session_protocol import SIDHESession
     
     # Start of conversation
-    session = FairyCircle()
+    session = SIDHESession()
     session.initialize()
     
     # During conversation

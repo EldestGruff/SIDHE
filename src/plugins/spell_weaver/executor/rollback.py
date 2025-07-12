@@ -326,7 +326,7 @@ class RollbackManager:
         
         try:
             # Create backup in temp directory
-            backup_dir = tempfile.mkdtemp(prefix="riker_backup_")
+            backup_dir = tempfile.mkdtemp(prefix="sidhe_backup_")
             backup_filename = os.path.basename(file_path) + ".backup"
             backup_path = os.path.join(backup_dir, backup_filename)
             
