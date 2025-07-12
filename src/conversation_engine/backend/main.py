@@ -19,6 +19,7 @@ from typing import Dict, Any
 import uvicorn
 
 from intent.models import ConversationIntent
+from conversation.ai_handler import AIConversationHandler
 
 from config.settings import settings
 
@@ -54,6 +55,7 @@ connection_manager = ConnectionManager()
 
 # Initialize heavy components during startup
 intent_parser = None
+ai_handler = None
 message_bus = None
 conversation_memory = None
 plugin_registry = None
@@ -61,10 +63,11 @@ plugin_registry = None
 @app.on_event("startup")
 async def startup_event():
     """Initialize application components on startup"""
-    global intent_parser, message_bus, conversation_memory, plugin_registry
+    global intent_parser, ai_handler, message_bus, conversation_memory, plugin_registry
     
     # Initialize components during startup
     intent_parser = IntentParser()
+    ai_handler = AIConversationHandler()
     message_bus = MessageBus()
     # Temporarily disable memory to fix core conversation functionality
     # conversation_memory = ConversationMemory()
@@ -88,6 +91,7 @@ async def health_check():
         "status": "enchanted",
         "components": {
             "websocket": "ready",
+            "ai_handler": await ai_handler.health_check() if ai_handler else "not_available",
             "message_bus": await message_bus.health_check(),
             "plugins": await plugin_registry.get_status() if plugin_registry else "not_available",
             "memory": await conversation_memory.health_check() if conversation_memory else "disabled"
@@ -122,8 +126,8 @@ async def websocket_endpoint(websocket: WebSocket):
                     intent = await intent_parser.parse_intent(user_input, conversation_id)
                     logger.info(f"✅ Intent parsed: {intent.type}")
                     
-                    # Generate response based on intent
-                    response = await route_to_plugins(intent, message)
+                    # Generate intelligent AI response
+                    response = await generate_ai_response(intent, message, user_input)
                     logger.info(f"📤 Sending response: {response}")
                     
                     await websocket.send_text(json.dumps(response))
@@ -208,6 +212,53 @@ async def websocket_endpoint_old(websocket: WebSocket):
         logger.error(f"❌ WebSocket error: {e}")
         import traceback
         traceback.print_exc()
+
+async def generate_ai_response(intent: ConversationIntent, message: Dict[str, Any], user_input: str) -> Dict[str, Any]:
+    """Generate intelligent AI response using SIDHE's AI handler"""
+    try:
+        # For quest requests or specific plugin functionality, route to plugins first
+        if intent.type == "quest_request" and message_bus:
+            try:
+                plugin_response = await route_to_plugins(intent, message)
+                # If plugin responds successfully, use that
+                if plugin_response.get("type") != "error":
+                    return plugin_response
+            except Exception as e:
+                logger.warning(f"Plugin routing failed, falling back to AI: {e}")
+        
+        # Use AI handler for intelligent conversation
+        if ai_handler:
+            # Build context from intent
+            context = {
+                "intent": intent.type,
+                "confidence": intent.confidence,
+                "entities": intent.entities if hasattr(intent, 'entities') else [],
+                "conversation_id": message.get("conversation_id", "default")
+            }
+            
+            # Generate AI response
+            ai_response = await ai_handler.generate_response(
+                user_input=user_input,
+                conversation_history=None,  # TODO: Add conversation history
+                context=context
+            )
+            
+            return ai_response
+        else:
+            # Fallback if AI handler not available
+            return {
+                "type": "response",
+                "content": f"I understand you're asking about {intent.type}, but my AI capabilities are currently limited. Please try again later.",
+                "intent": intent.dict()
+            }
+            
+    except Exception as e:
+        logger.error(f"Error generating AI response: {e}")
+        return {
+            "type": "error",
+            "content": "I encountered an error while processing your request. Please try again.",
+            "error": str(e)
+        }
 
 async def route_to_plugins(intent, message: Dict[str, Any]) -> Dict[str, Any]:
     """Route intent to appropriate plugins and return response"""
