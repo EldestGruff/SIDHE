@@ -50,6 +50,35 @@ import shutil
 # Add src to Python path for imports
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
+def load_env_file(env_path: Path = None):
+    """Load environment variables from .env file"""
+    if env_path is None:
+        env_path = Path(__file__).parent / ".env"
+    
+    if not env_path.exists():
+        return
+    
+    with open(env_path, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith('#') and '=' in line:
+                key, value = line.split('=', 1)
+                key = key.strip()
+                value = value.strip()
+                
+                # Remove quotes if present
+                if value.startswith('"') and value.endswith('"'):
+                    value = value[1:-1]
+                elif value.startswith("'") and value.endswith("'"):
+                    value = value[1:-1]
+                
+                # Only set if not already set in environment
+                if key not in os.environ:
+                    os.environ[key] = value
+
+# Load environment variables early
+load_env_file()
+
 class SIDHEColor:
     """ANSI color codes for beautiful terminal output"""
     HEADER = '\033[95m'
@@ -369,6 +398,58 @@ class SIDHEOrchestrator:
         if sys.version_info < (3, 11):
             self.logger.error("Python 3.11+ required")
             return False
+        
+        # Check for .env file
+        env_file = Path.cwd() / ".env"
+        if env_file.exists():
+            self.logger.success(f"Found .env file with configuration")
+        else:
+            self.logger.warning(".env file not found - using environment variables or defaults")
+        
+        # Check critical environment variables
+        critical_vars = {
+            "ANTHROPIC_API_KEY": "Anthropic Claude API access",
+        }
+        
+        optional_vars = {
+            "GITHUB_TOKEN": "GitHub integration for quest_tracker",
+            "GITHUB_REPO": "GitHub repository for quest_tracker",
+            "REDIS_URL": "Redis connection (defaults to localhost:6379)"
+        }
+        
+        # Validate critical variables
+        missing_critical = []
+        for var, description in critical_vars.items():
+            value = os.getenv(var)
+            if not value or value == f"your-{var.lower().replace('_', '-')}-here":
+                missing_critical.append(f"{var} ({description})")
+            else:
+                # Mask the key for security
+                masked_value = value[:8] + "..." + value[-4:] if len(value) > 12 else "***"
+                self.logger.success(f"{var}: {masked_value}")
+        
+        # Report optional variables
+        for var, description in optional_vars.items():
+            value = os.getenv(var)
+            if value and value != f"your-{var.lower().replace('_', '-')}-here":
+                self.logger.success(f"{var}: configured")
+            else:
+                self.logger.info(f"{var}: not set ({description})")
+        
+        if missing_critical:
+            self.logger.error("Missing critical environment variables:")
+            for var in missing_critical:
+                self.logger.error(f"  - {var}")
+            self.logger.error("Please set these in your .env file or environment")
+            
+            # Show helpful message
+            self.logger.info("To fix this:")
+            self.logger.info("1. Edit the .env file in the project root")
+            self.logger.info("2. Set ANTHROPIC_API_KEY=your-actual-api-key")
+            self.logger.info("3. Get your API key from: https://console.anthropic.com/")
+            
+            if not self.args.health_check:
+                return False
         
         # Check required directories
         required_dirs = [

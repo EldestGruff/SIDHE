@@ -17,12 +17,16 @@ cd /path/to/sidhe
 # 2. Install Python dependencies
 pip install -r requirements-startup.txt
 
-# 3. Install frontend dependencies (if using frontend)
+# 3. Configure environment variables (REQUIRED)
+./setup-env.sh
+# Or manually: cp .env.example .env && edit .env
+
+# 4. Install frontend dependencies (if using frontend)
 cd src/conversation_engine/frontend
 npm install
 cd ../../..
 
-# 4. Install Redis (if not installed)
+# 5. Install Redis (if not installed)
 # macOS:
 brew install redis
 

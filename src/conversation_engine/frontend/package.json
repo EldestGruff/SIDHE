@@ -1,32 +1,40 @@
 {
-  "name": "sidhe-conversation-engine-frontend",
-  "version": "0.1.0",
-  "description": "Frontend for SIDHE Conversation Engine - AI-powered development assistant",
+  "name": "sidhe-frontend",
+  "version": "1.0.0",
+  "description": "SIDHE - Ancient AI Development Companion Frontend",
+  "homepage": "http://localhost:3000",
+  "keywords": [
+    "sidhe",
+    "ai",
+    "conversation",
+    "development",
+    "mystical",
+    "assistant"
+  ],
+  "author": "SIDHE Development Team",
+  "license": "MIT",
   "private": true,
   "dependencies": {
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "lucide-react": "^0.263.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "tailwindcss": "^3.3.0",
-    "@tailwindcss/forms": "^0.5.7",
-    "@tailwindcss/typography": "^0.5.10",
-    "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.32"
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build", 
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "lint": "eslint src --ext .js,.jsx",
-    "format": "prettier --write src/**/*.{js,jsx,css,md}"
+    "eject": "react-scripts eject"
   },
-  "devDependencies": {
-    "@testing-library/jest-dom": "^6.1.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^14.5.1",
-    "eslint": "^8.55.0",
-    "prettier": "^3.1.0"
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
   "browserslist": {
     "production": [
@@ -39,6 +47,13 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.3",
+    "@tailwindcss/typography": "^0.5.7",
+    "autoprefixer": "^10.4.7",
+    "postcss": "^8.4.14",
+    "tailwindcss": "^3.1.8"
   },
   "proxy": "http://localhost:8000"
 }
