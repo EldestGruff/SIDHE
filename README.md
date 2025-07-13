@@ -54,6 +54,7 @@ open http://localhost:3000
 - **Memory Manager**: Conversation context and project history
 - **Config Manager**: System configuration and settings
 - **Quality Control**: Automated code linting, testing, and quality assurance
+- **DevOps Automator**: Enterprise-grade CI/CD, deployment, and infrastructure automation
 - **Extensible Architecture**: Easy plugin development and integration
 
 ## 🏗️ System Architecture
@@ -88,6 +89,7 @@ open http://localhost:3000
 - **Feature Planning**: Break down features into actionable tasks
 - **Code Generation**: Create boilerplate and implement features
 - **Quality Assurance**: Automated linting, testing, and code quality validation
+- **DevOps Automation**: CI/CD pipelines, deployment strategies, and infrastructure monitoring
 - **Testing Guidance**: Help write tests and improve code quality
 
 ### 🔮 Mystical Features
@@ -111,7 +113,8 @@ SIDHE/
 │   ├── quest_tracker/              # GitHub integration
 │   ├── memory_manager/             # Conversation memory
 │   ├── config_manager/             # Configuration management
-│   └── quality_control/            # Code quality assurance
+│   ├── quality_control/            # Code quality assurance
+│   └── devops_automator/           # CI/CD and deployment automation
 ├── start-sidhe.py                  # Main startup script
 ├── setup-env.sh                   # Environment setup
 └── README.md                       # This file
@@ -267,6 +270,7 @@ Check system status at any time:
 - ✅ Intent classification and smart routing
 - ✅ Plugin ecosystem with GitHub integration
 - ✅ Quality Control Plugin Cluster with automated linting and testing
+- ✅ DevOps Automator Plugin with CI/CD, deployment, and infrastructure automation
 - ✅ Mystical SIDHE-branded interface
 - ✅ Comprehensive development assistance
 
